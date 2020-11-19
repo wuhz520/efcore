@@ -11,6 +11,8 @@ using Microsoft.EntityFrameworkCore.ChangeTracking;
 using Microsoft.EntityFrameworkCore.Storage;
 using Microsoft.Extensions.DependencyInjection;
 
+#nullable enable
+
 namespace Microsoft.EntityFrameworkCore.SqlServer.Storage.Internal
 {
     /// <summary>
@@ -221,11 +223,11 @@ namespace Microsoft.EntityFrameworkCore.SqlServer.Storage.Internal
         ///     any release. You should only use it directly in your code with extreme caution and knowing that
         ///     doing so can result in application failures when updating to a new Entity Framework Core release.
         /// </summary>
-        protected override RelationalTypeMapping FindMapping(in RelationalTypeMappingInfo mappingInfo)
+        protected override RelationalTypeMapping? FindMapping(in RelationalTypeMappingInfo mappingInfo)
             => FindRawMapping(mappingInfo)?.Clone(mappingInfo)
                 ?? base.FindMapping(mappingInfo);
 
-        private RelationalTypeMapping FindRawMapping(RelationalTypeMappingInfo mappingInfo)
+        private RelationalTypeMapping? FindRawMapping(RelationalTypeMappingInfo mappingInfo)
         {
             var clrType = mappingInfo.ClrType;
             var storeTypeName = mappingInfo.StoreTypeName;
@@ -233,7 +235,7 @@ namespace Microsoft.EntityFrameworkCore.SqlServer.Storage.Internal
             if (storeTypeName != null)
             {
                 var storeTypeNameBase = mappingInfo.StoreTypeNameBase;
-                if (storeTypeNameBase.StartsWith("[", StringComparison.Ordinal)
+                if (storeTypeNameBase!.StartsWith("[", StringComparison.Ordinal)
                     && storeTypeNameBase.EndsWith("]", StringComparison.Ordinal))
                 {
                     storeTypeNameBase = storeTypeNameBase.Substring(1, storeTypeNameBase.Length - 2);
@@ -318,17 +320,16 @@ namespace Microsoft.EntityFrameworkCore.SqlServer.Storage.Internal
             return null;
         }
 
-        private static readonly List<string> _nameBasesUsingPrecision =
-            new List<string>
-            {
-                "decimal",
-                "dec",
-                "numeric",
-                "datetime2",
-                "datetimeoffset",
-                "double precision",
-                "float"
-            };
+        private static readonly List<string> _nameBasesUsingPrecision = new()
+        {
+            "decimal",
+            "dec",
+            "numeric",
+            "datetime2",
+            "datetimeoffset",
+            "double precision",
+            "float"
+        };
 
         /// <summary>
         ///     This is an internal API that supports the Entity Framework Core infrastructure and not subject to
@@ -336,8 +337,8 @@ namespace Microsoft.EntityFrameworkCore.SqlServer.Storage.Internal
         ///     any release. You should only use it directly in your code with extreme caution and knowing that
         ///     doing so can result in application failures when updating to a new Entity Framework Core release.
         /// </summary>
-        protected override string ParseStoreTypeName(
-            string storeTypeName,
+        protected override string? ParseStoreTypeName(
+            string? storeTypeName,
             out bool? unicode,
             out int? size,
             out int? precision,

@@ -34,7 +34,9 @@ namespace Microsoft.EntityFrameworkCore.Query
             Check.NotNull(dependencies, nameof(dependencies));
 
             _typeMappingSource = dependencies.TypeMappingSource;
-            _boolTypeMapping = _typeMappingSource.FindMapping(typeof(bool));
+            // TODO-NULLABLE: we assume all relational providers have a mapping for bool
+            _boolTypeMapping = _typeMappingSource.FindMapping(typeof(bool))
+                ?? throw new InvalidOperationException("No type mapping found for CLR bool");
         }
 
         /// <inheritdoc />

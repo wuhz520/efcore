@@ -12,6 +12,8 @@ using JetBrains.Annotations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using Microsoft.EntityFrameworkCore.Utilities;
 
+#nullable enable
+
 namespace Microsoft.EntityFrameworkCore.Storage
 {
     /// <summary>
@@ -248,7 +250,7 @@ namespace Microsoft.EntityFrameworkCore.Storage
             };
 
         private static MethodInfo GetDataReaderMethod(string name)
-            => typeof(DbDataReader).GetRuntimeMethod(name, new[] { typeof(int) });
+            => typeof(DbDataReader).GetRuntimeMethod(name, new[] { typeof(int) })!;
 
         /// <summary>
         ///     Gets the mapping to be used when the only piece of information is that there is a null value.
@@ -277,6 +279,8 @@ namespace Microsoft.EntityFrameworkCore.Storage
 
             var storeType = parameters.StoreType;
 
+            // TODO-NULLABLE: It seems like RelationalTypeMappingParameters.StoreType is non-nullable, so this check is redundant?
+            // TODO-NULLABLE: That would also means that StoreTypeNameBase is non-nullable
             if (storeType != null)
             {
                 var storeTypeNameBase = GetBaseName(storeType);
@@ -482,7 +486,7 @@ namespace Microsoft.EntityFrameworkCore.Storage
         public virtual DbParameter CreateParameter(
             [NotNull] DbCommand command,
             [NotNull] string name,
-            [CanBeNull] object value,
+            [CanBeNull] object? value,
             bool? nullable = null)
         {
             Check.NotNull(command, nameof(command));
@@ -520,7 +524,7 @@ namespace Microsoft.EntityFrameworkCore.Storage
         // when enum would contain convert node. We remove the convert node but we also
         // need to convert the integral value to enum value.
         // This allows us to use converter on enum value or print enum value directly if supported by provider
-        private object ConvertUnderlyingEnumValueToEnum(object value)
+        private object? ConvertUnderlyingEnumValueToEnum(object? value)
             => value?.GetType().IsInteger() == true && ClrType.UnwrapNullableType().IsEnum
                 ? Enum.ToObject(ClrType.UnwrapNullableType(), value)
                 : value;
@@ -540,7 +544,7 @@ namespace Microsoft.EntityFrameworkCore.Storage
         /// <returns>
         ///     The generated string.
         /// </returns>
-        public virtual string GenerateSqlLiteral([CanBeNull] object value)
+        public virtual string GenerateSqlLiteral([CanBeNull] object? value)
         {
             value = ConvertUnderlyingEnumValueToEnum(value);
 
@@ -559,7 +563,7 @@ namespace Microsoft.EntityFrameworkCore.Storage
         /// <returns>
         ///     The generated string.
         /// </returns>
-        public virtual string GenerateProviderValueSqlLiteral([CanBeNull] object value)
+        public virtual string GenerateProviderValueSqlLiteral([CanBeNull] object? value)
             => value == null
                 ? "NULL"
                 : GenerateNonNullSqlLiteral(value);
