@@ -1019,7 +1019,7 @@ namespace Microsoft.EntityFrameworkCore.Query
 
         /// <inheritdoc />
         [Obsolete("Use IRelationalTypeMappingSource directly.")]
-        public virtual RelationalTypeMapping FindMapping(Type type)
+        public virtual RelationalTypeMapping? FindMapping(Type type)
             => _typeMappingSource.FindMapping(Check.NotNull(type, nameof(type)));
     }
 }

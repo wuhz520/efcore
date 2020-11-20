@@ -1270,6 +1270,8 @@ namespace Microsoft.EntityFrameworkCore.Query.Internal
                     for (var i = 0; i < _columns.Count; i++)
                     {
                         var column = _columns[i];
+                        // TODO-NULLABLE: Interestingly, there doesn't seem to be a single place in the codebase where we instantiate
+                        // a ReaderColumn... Is this dead code?
                         if (!readerColumns.TryGetValue(column.Name, out var ordinal))
                         {
                             throw new InvalidOperationException(RelationalStrings.FromSqlMissingColumn(column.Name));

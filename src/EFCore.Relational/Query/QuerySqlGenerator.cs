@@ -303,6 +303,8 @@ namespace Microsoft.EntityFrameworkCore.Query
         protected override Expression VisitTableValuedFunction(TableValuedFunctionExpression tableValuedFunctionExpression)
         {
             Check.NotNull(tableValuedFunctionExpression, nameof(tableValuedFunctionExpression));
+            Check.DebugAssert(tableValuedFunctionExpression.Alias is not null,
+                $"{nameof(tableValuedFunctionExpression.Alias)} is null on {nameof(tableValuedFunctionExpression)}");
 
             if (!string.IsNullOrEmpty(tableValuedFunctionExpression.StoreFunction.Schema))
             {
@@ -329,6 +331,8 @@ namespace Microsoft.EntityFrameworkCore.Query
         protected override Expression VisitColumn(ColumnExpression columnExpression)
         {
             Check.NotNull(columnExpression, nameof(columnExpression));
+            Check.DebugAssert(columnExpression.Table.Alias is not null,
+                $"{nameof(columnExpression.Table.Alias)} is null on {nameof(columnExpression)}.{nameof(columnExpression.Table)}");
 
             _relationalCommandBuilder
                 .Append(_sqlGenerationHelper.DelimitIdentifier(columnExpression.Table.Alias))
@@ -342,6 +346,8 @@ namespace Microsoft.EntityFrameworkCore.Query
         protected override Expression VisitTable(TableExpression tableExpression)
         {
             Check.NotNull(tableExpression, nameof(tableExpression));
+            Check.DebugAssert(tableExpression.Alias is not null,
+                $"{nameof(tableExpression.Alias)} is null on {nameof(tableExpression)}");
 
             _relationalCommandBuilder
                 .Append(_sqlGenerationHelper.DelimitIdentifier(tableExpression.Name, tableExpression.Schema))
@@ -409,6 +415,8 @@ namespace Microsoft.EntityFrameworkCore.Query
         protected override Expression VisitFromSql(FromSqlExpression fromSqlExpression)
         {
             Check.NotNull(fromSqlExpression, nameof(fromSqlExpression));
+            Check.DebugAssert(fromSqlExpression.Alias is not null,
+                $"{nameof(fromSqlExpression.Alias)} is null on {nameof(fromSqlExpression)}");
 
             _relationalCommandBuilder.AppendLine("(");
 
@@ -563,6 +571,8 @@ namespace Microsoft.EntityFrameworkCore.Query
         protected override Expression VisitSqlParameter(SqlParameterExpression sqlParameterExpression)
         {
             Check.NotNull(sqlParameterExpression, nameof(sqlParameterExpression));
+            Check.DebugAssert(sqlParameterExpression.TypeMapping is not null,
+                $"{nameof(sqlParameterExpression.TypeMapping)} is null on {nameof(sqlParameterExpression)}");
 
             var parameterNameInCommand = _sqlGenerationHelper.GenerateParameterName(sqlParameterExpression.Name);
 
@@ -1091,6 +1101,8 @@ namespace Microsoft.EntityFrameworkCore.Query
 
         private void GenerateSetOperationHelper(SetOperationBase setOperation)
         {
+            Check.DebugAssert(setOperation.Alias is not null, $"{nameof(setOperation.Alias)} is null on {nameof(setOperation)}");
+
             _relationalCommandBuilder.AppendLine("(");
             using (_relationalCommandBuilder.Indent())
             {

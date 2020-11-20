@@ -16,6 +16,9 @@ using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Utilities;
 using Microsoft.Extensions.DependencyInjection;
 using IsolationLevel = System.Data.IsolationLevel;
+using CA = System.Diagnostics.CodeAnalysis;
+
+#nullable enable
 
 namespace Microsoft.EntityFrameworkCore.Storage
 {
@@ -36,13 +39,13 @@ namespace Microsoft.EntityFrameworkCore.Storage
     /// </summary>
     public abstract class RelationalConnection : IRelationalConnection, ITransactionEnlistmentManager
     {
-        private string _connectionString;
+        private string? _connectionString;
         private bool _connectionOwned;
         private int _openedCount;
         private bool _openedInternally;
         private int? _commandTimeout;
-        private readonly ConcurrentStack<Transaction> _ambientTransactions;
-        private DbConnection _connection;
+        private readonly ConcurrentStack<Transaction?> _ambientTransactions;
+        private DbConnection? _connection;
 
         /// <summary>
         ///     Initializes a new instance of the <see cref="RelationalConnection" /> class.
@@ -79,7 +82,7 @@ namespace Microsoft.EntityFrameworkCore.Storage
                 _connectionOwned = true;
             }
 
-            _ambientTransactions = new ConcurrentStack<Transaction>();
+            _ambientTransactions = new ConcurrentStack<Transaction?>();
         }
 
         /// <summary>
@@ -87,6 +90,7 @@ namespace Microsoft.EntityFrameworkCore.Storage
         /// </summary>
         public virtual Guid ConnectionId { get; } = Guid.NewGuid();
 
+        // TODO-NULLABLE: Can this actually return null (see comment)?
         /// <summary>
         ///     The <see cref="DbContext" /> currently in use, or null if not known.
         /// </summary>
@@ -106,7 +110,7 @@ namespace Microsoft.EntityFrameworkCore.Storage
         /// <summary>
         ///     Gets or sets the connection string for the database.
         /// </summary>
-        public virtual string ConnectionString
+        public virtual string? ConnectionString
         {
             get => _connectionString ?? _connection?.ConnectionString;
             set
@@ -148,6 +152,7 @@ namespace Microsoft.EntityFrameworkCore.Storage
         ///         Note that a connection set must be disposed by application code since it was not created by Entity Framework.
         ///     </para>
         /// </summary>
+        [CA.AllowNull]
         public virtual DbConnection DbConnection
         {
             get
@@ -181,12 +186,12 @@ namespace Microsoft.EntityFrameworkCore.Storage
         /// <summary>
         ///     Gets the current transaction.
         /// </summary>
-        public virtual IDbContextTransaction CurrentTransaction { get; [param: CanBeNull] protected set; }
+        public virtual IDbContextTransaction? CurrentTransaction { get; [param: CanBeNull] protected set; }
 
         /// <summary>
         ///     The currently enlisted transaction.
         /// </summary>
-        public virtual Transaction EnlistedTransaction
+        public virtual Transaction? EnlistedTransaction
         {
             get
             {
@@ -214,7 +219,7 @@ namespace Microsoft.EntityFrameworkCore.Storage
         ///     Specifies an existing <see cref="Transaction" /> to be used for database operations.
         /// </summary>
         /// <param name="transaction"> The transaction to be used. </param>
-        public virtual void EnlistTransaction(Transaction transaction)
+        public virtual void EnlistTransaction(Transaction? transaction)
         {
             if (!SupportsAmbientTransactions)
             {
@@ -237,7 +242,8 @@ namespace Microsoft.EntityFrameworkCore.Storage
         ///     by providers to make a different call instead.
         /// </summary>
         /// <param name="transaction"> The transaction to be used. </param>
-        protected virtual void ConnectionEnlistTransaction([NotNull] Transaction transaction)
+        // TODO-NULLABLE: This gets called with null, and DbConnection.EnlistTransaction does accept null
+        protected virtual void ConnectionEnlistTransaction([CanBeNull] Transaction? transaction)
              => DbConnection.EnlistTransaction(transaction);
 
         /// <summary>
@@ -268,8 +274,6 @@ namespace Microsoft.EntityFrameworkCore.Storage
         ///     Begins a new transaction.
         /// </summary>
         /// <returns> The newly created transaction. </returns>
-        [NotNull]
-        // ReSharper disable once RedundantNameQualifier
         public virtual IDbContextTransaction BeginTransaction()
             => BeginTransaction(IsolationLevel.Unspecified);
 
@@ -280,9 +284,7 @@ namespace Microsoft.EntityFrameworkCore.Storage
         /// <returns>
         ///     A task that represents the asynchronous operation. The task result contains the newly created transaction.
         /// </returns>
-        [NotNull]
         public virtual async Task<IDbContextTransaction> BeginTransactionAsync(CancellationToken cancellationToken = default)
-            // ReSharper disable once RedundantNameQualifier
             => await BeginTransactionAsync(IsolationLevel.Unspecified, cancellationToken).ConfigureAwait(false);
 
         /// <summary>
@@ -327,6 +329,7 @@ namespace Microsoft.EntityFrameworkCore.Storage
         /// </summary>
         /// <param name="isolationLevel"> The isolation level to use for the transaction. </param>
         /// <returns> The newly created transaction. </returns>
+        // TODO-NULLABLE: Spelling mistake :(
         protected virtual DbTransaction ConnectionBeginTransation(IsolationLevel isolationLevel)
              => DbConnection.BeginTransaction(isolationLevel);
 
@@ -382,6 +385,7 @@ namespace Microsoft.EntityFrameworkCore.Storage
         /// <param name="isolationLevel"> The isolation level to use for the transaction. </param>
         /// <param name="cancellationToken"> A <see cref="CancellationToken" /> to observe while waiting for the task to complete. </param>
         /// <returns> The newly created transaction. </returns>
+        // TODO-NULLABLE: Spelling mistake :(
         protected virtual ValueTask<DbTransaction> ConnectionBeginTransationAsync(
             IsolationLevel isolationLevel,
             CancellationToken cancellationToken = default)
@@ -419,7 +423,7 @@ namespace Microsoft.EntityFrameworkCore.Storage
         /// </summary>
         /// <param name="transaction"> The transaction to be used. </param>
         /// <returns> An instance of <see cref="IDbTransaction" /> that wraps the provided transaction. </returns>
-        public virtual IDbContextTransaction UseTransaction(DbTransaction transaction)
+        public virtual IDbContextTransaction? UseTransaction(DbTransaction? transaction)
             => UseTransaction(transaction, Guid.NewGuid());
 
         /// <summary>
@@ -428,7 +432,8 @@ namespace Microsoft.EntityFrameworkCore.Storage
         /// <param name="transaction"> The transaction to be used. </param>
         /// <param name="transactionId"> The unique identifier for the transaction. </param>
         /// <returns> An instance of <see cref="IDbTransaction" /> that wraps the provided transaction. </returns>
-        public virtual IDbContextTransaction UseTransaction(DbTransaction transaction, Guid transactionId)
+        // TODO-NULLABLE: Note that this can return null (if correct, need to update doc comment)
+        public virtual IDbContextTransaction? UseTransaction(DbTransaction? transaction, Guid transactionId)
         {
             if (ShouldUseTransaction(transaction))
             {
@@ -453,8 +458,8 @@ namespace Microsoft.EntityFrameworkCore.Storage
         /// <param name="transaction"> The transaction to be used. </param>
         /// <param name="cancellationToken"> A <see cref="CancellationToken" /> to observe while waiting for the task to complete. </param>
         /// <returns> An instance of <see cref="IDbTransaction" /> that wraps the provided transaction. </returns>
-        public virtual Task<IDbContextTransaction> UseTransactionAsync(
-            DbTransaction transaction,
+        public virtual Task<IDbContextTransaction?> UseTransactionAsync(
+            DbTransaction? transaction,
             CancellationToken cancellationToken = default)
             => UseTransactionAsync(transaction, Guid.NewGuid(), cancellationToken);
 
@@ -465,8 +470,8 @@ namespace Microsoft.EntityFrameworkCore.Storage
         /// <param name="transactionId"> The unique identifier for the transaction. </param>
         /// <param name="cancellationToken"> A <see cref="CancellationToken" /> to observe while waiting for the task to complete. </param>
         /// <returns> An instance of <see cref="IDbTransaction" /> that wraps the provided transaction. </returns>
-        public virtual async Task<IDbContextTransaction> UseTransactionAsync(
-            DbTransaction transaction,
+        public virtual async Task<IDbContextTransaction?> UseTransactionAsync(
+            DbTransaction? transaction,
             Guid transactionId,
             CancellationToken cancellationToken = default)
         {
@@ -489,7 +494,7 @@ namespace Microsoft.EntityFrameworkCore.Storage
             return CurrentTransaction;
         }
 
-        private bool ShouldUseTransaction(DbTransaction transaction)
+        private bool ShouldUseTransaction(DbTransaction? transaction)
         {
             if (transaction == null)
             {
@@ -773,7 +778,7 @@ namespace Microsoft.EntityFrameworkCore.Storage
             _ambientTransactions.Push(current);
         }
 
-        private void HandleTransactionCompleted(object sender, TransactionEventArgs e)
+        private void HandleTransactionCompleted(object? sender, TransactionEventArgs e)
         {
             // This could be invoked on a different thread at arbitrary time after the transaction completes
             _ambientTransactions.TryPeek(out var ambientTransaction);
@@ -939,7 +944,7 @@ namespace Microsoft.EntityFrameworkCore.Storage
         [Obsolete("EF Core no longer uses this semaphore. It will be removed in an upcoming release.")]
         public virtual SemaphoreSlim Semaphore { get; } = new SemaphoreSlim(1);
 
-        private Transaction _enlistedTransaction;
+        private Transaction? _enlistedTransaction;
 
         /// <summary>
         ///     Performs application-defined tasks associated with freeing, releasing, or resetting unmanaged resources.

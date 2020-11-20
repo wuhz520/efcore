@@ -6,6 +6,8 @@ using JetBrains.Annotations;
 using Microsoft.EntityFrameworkCore.Metadata;
 using Microsoft.EntityFrameworkCore.Utilities;
 
+#nullable enable
+
 namespace Microsoft.EntityFrameworkCore.Storage
 {
     /// <summary>
@@ -48,8 +50,8 @@ namespace Microsoft.EntityFrameworkCore.Storage
         [Obsolete]
         public TypeMaterializationInfo(
             [NotNull] Type modelClrType,
-            [CanBeNull] IProperty property,
-            [CanBeNull] IRelationalTypeMappingSource typeMappingSource,
+            [CanBeNull] IProperty? property,
+            [CanBeNull] IRelationalTypeMappingSource? typeMappingSource,
             bool? fromLeftOuterJoin,
             int index)
             : this(modelClrType, property, typeMappingSource, fromLeftOuterJoin, index, mapping: null)
@@ -65,12 +67,13 @@ namespace Microsoft.EntityFrameworkCore.Storage
         /// <param name="nullable"> A value indicating whether the value could be null. </param>
         public TypeMaterializationInfo(
             [NotNull] Type modelClrType,
-            [CanBeNull] IProperty property,
-            [NotNull] RelationalTypeMapping mapping,
+            [CanBeNull] IProperty? property,
+            [CanBeNull] RelationalTypeMapping? mapping,
             bool? nullable = null)
         {
             Check.NotNull(modelClrType, nameof(modelClrType));
 
+            // TODO-NULLABLE:
             ProviderClrType = mapping?.Converter?.ProviderClrType
                 ?? modelClrType;
 
@@ -95,11 +98,11 @@ namespace Microsoft.EntityFrameworkCore.Storage
         [Obsolete]
         public TypeMaterializationInfo(
             [NotNull] Type modelClrType,
-            [CanBeNull] IProperty property,
-            [CanBeNull] IRelationalTypeMappingSource typeMappingSource,
+            [CanBeNull] IProperty? property,
+            [CanBeNull] IRelationalTypeMappingSource? typeMappingSource,
             bool? fromLeftOuterJoin,
             int index = -1,
-            [CanBeNull] RelationalTypeMapping mapping = null)
+            [CanBeNull] RelationalTypeMapping? mapping = null)
         {
             Check.NotNull(modelClrType, nameof(modelClrType));
 
@@ -132,12 +135,12 @@ namespace Microsoft.EntityFrameworkCore.Storage
         /// <summary>
         ///     The type mapping for the value to be read.
         /// </summary>
-        public virtual RelationalTypeMapping Mapping { get; }
+        public virtual RelationalTypeMapping? Mapping { get; }
 
         /// <summary>
         ///     The property associated with the type, or <see langword="null" /> if none.
         /// </summary>
-        public virtual IProperty Property { get; }
+        public virtual IProperty? Property { get; }
 
         /// <summary>
         ///     The index of the underlying result set that should be used for this type,
@@ -178,7 +181,7 @@ namespace Microsoft.EntityFrameworkCore.Storage
         /// </summary>
         /// <param name="obj"> The object to compare with the current object. </param>
         /// <returns> <see langword="true" /> if the specified object is equal to the current object; otherwise, <see langword="false" />. </returns>
-        public override bool Equals(object obj)
+        public override bool Equals(object? obj)
             => !(obj is null)
                 && (ReferenceEquals(this, obj)
                     || obj.GetType() == GetType()

@@ -22,7 +22,7 @@ namespace Microsoft.EntityFrameworkCore.Storage
         /// <summary>
         ///     The currently enlisted transaction.
         /// </summary>
-        Transaction EnlistedTransaction { get; }
+        Transaction? EnlistedTransaction { get; }
 
         /// <summary>
         ///     Specifies an existing <see cref="Transaction" /> to be used for database operations.

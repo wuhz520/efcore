@@ -8,6 +8,8 @@ using System.Threading;
 using System.Threading.Tasks;
 using Microsoft.EntityFrameworkCore.Diagnostics;
 
+#nullable enable
+
 namespace Microsoft.EntityFrameworkCore.Storage
 {
     /// <summary>
@@ -55,7 +57,7 @@ namespace Microsoft.EntityFrameworkCore.Storage
         /// </summary>
         /// <param name="parameterObject"> Parameters for this method. </param>
         /// <returns> The result of the command. </returns>
-        object ExecuteScalar(RelationalCommandParameterObject parameterObject);
+        object? ExecuteScalar(RelationalCommandParameterObject parameterObject);
 
         /// <summary>
         ///     Asynchronously executes the command with a single scalar result.
@@ -65,7 +67,7 @@ namespace Microsoft.EntityFrameworkCore.Storage
         /// <returns>
         ///     A task that represents the asynchronous operation. The task result contains the result of the command.
         /// </returns>
-        Task<object> ExecuteScalarAsync(
+        Task<object?> ExecuteScalarAsync(
             RelationalCommandParameterObject parameterObject,
             CancellationToken cancellationToken = default);
 

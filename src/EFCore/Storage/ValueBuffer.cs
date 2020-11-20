@@ -8,6 +8,8 @@ using System.Runtime.CompilerServices;
 using JetBrains.Annotations;
 using Microsoft.EntityFrameworkCore.Utilities;
 
+#nullable enable
+
 namespace Microsoft.EntityFrameworkCore.Storage
 {
     /// <summary>
@@ -26,13 +28,13 @@ namespace Microsoft.EntityFrameworkCore.Storage
         /// </summary>
         public static readonly ValueBuffer Empty = new ValueBuffer();
 
-        private readonly object[] _values;
+        private readonly object?[] _values;
 
         /// <summary>
         ///     Initializes a new instance of the <see cref="ValueBuffer" /> class.
         /// </summary>
         /// <param name="values"> The list of values for this buffer. </param>
-        public ValueBuffer([NotNull] object[] values)
+        public ValueBuffer([NotNull] object?[] values)
         {
             Check.DebugAssert(values != null, "values is null");
 
@@ -44,7 +46,7 @@ namespace Microsoft.EntityFrameworkCore.Storage
         /// </summary>
         /// <param name="index"> The index of the value to get. </param>
         /// <returns> The value at the requested index. </returns>
-        public object this[int index]
+        public object? this[int index]
         {
             [MethodImpl(MethodImplOptions.AggressiveInlining)]
             get => _values[index];
@@ -53,7 +55,7 @@ namespace Microsoft.EntityFrameworkCore.Storage
         }
 
         internal static readonly MethodInfo GetValueMethod
-            = typeof(ValueBuffer).GetRuntimeProperties().Single(p => p.GetIndexParameters().Length > 0).GetMethod;
+            = typeof(ValueBuffer).GetRuntimeProperties().Single(p => p.GetIndexParameters().Length > 0).GetMethod!;
 
         /// <summary>
         ///     Gets the number of values in this buffer.
@@ -65,6 +67,7 @@ namespace Microsoft.EntityFrameworkCore.Storage
         ///     Gets a value indicating whether the value buffer is empty.
         /// </summary>
         public bool IsEmpty
+        // TODO-NULLABLE: We have an assertion in the ctor that this will never happen? What about _value.Length == 0?
             => _values == null;
 
         /// <summary>
@@ -76,7 +79,7 @@ namespace Microsoft.EntityFrameworkCore.Storage
         /// <returns>
         ///     <see langword="true" /> if the object is a <see cref="ValueBuffer" /> and contains the same values, otherwise <see langword="false" />.
         /// </returns>
-        public override bool Equals(object obj)
+        public override bool Equals(object? obj)
             => !(obj is null)
                 && obj is ValueBuffer buffer
                 && Equals(buffer);

@@ -73,6 +73,6 @@ namespace Microsoft.EntityFrameworkCore.Storage
         /// <summary>
         ///     Gets the current transaction.
         /// </summary>
-        IDbContextTransaction CurrentTransaction { get; }
+        IDbContextTransaction? CurrentTransaction { get; }
     }
 }
