@@ -6,6 +6,7 @@ using System.Collections.Generic;
 using System.Diagnostics;
 using System.Reflection;
 using JetBrains.Annotations;
+using Microsoft.EntityFrameworkCore.Diagnostics;
 
 #nullable enable
 
@@ -55,7 +56,7 @@ namespace Microsoft.EntityFrameworkCore.Metadata
         /// <summary>
         ///     A <see cref="MemberIdentity" /> instance that does not represent any member.
         /// </summary>
-        public static readonly MemberIdentity None = new MemberIdentity((object?)null);
+        public static readonly MemberIdentity None = new((object?)null);
 
         /// <summary>
         ///     Creates a new <see cref="MemberIdentity" /> from the given member name.
@@ -78,9 +79,12 @@ namespace Microsoft.EntityFrameworkCore.Metadata
         /// <summary>
         ///     The name of the member.
         /// </summary>
-        public string? Name
+        /// <exception cref="InvalidOperationException"> The <see cref="MemberIdentity"/> is empty. </exception>
+        public string Name
         {
-            [DebuggerStepThrough] get => MemberInfo?.GetSimpleMemberName() ?? (string?)_nameOrMember;
+            [DebuggerStepThrough] get => MemberInfo?.GetSimpleMemberName()
+                ?? (string?)_nameOrMember
+                ?? throw new InvalidOperationException(CoreStrings.MemberIdentityIsEmpty);
         }
 
         /// <summary>
@@ -92,7 +96,7 @@ namespace Microsoft.EntityFrameworkCore.Metadata
         }
 
         private string DebuggerDisplay()
-            => Name ?? "NONE";
+            => IsNone() ? "NONE" : Name;
 
         /// <inheritdoc />
         public override bool Equals(object? obj)

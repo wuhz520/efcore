@@ -1445,6 +1445,12 @@ namespace Microsoft.EntityFrameworkCore.Diagnostics
                 type);
 
         /// <summary>
+        ///     An empty 'MemberIdentity' has been passed in a context which does not support it.
+        /// </summary>
+        public static string MemberIdentityIsEmpty
+            => GetString("MemberIdentityIsEmpty");
+
+        /// <summary>
         ///     The specified field '{field}' could not be found for property '{2_entityType}.{1_property}'.
         /// </summary>
         public static string MissingBackingField([CanBeNull] object field, [CanBeNull] object property, [CanBeNull] object entityType)

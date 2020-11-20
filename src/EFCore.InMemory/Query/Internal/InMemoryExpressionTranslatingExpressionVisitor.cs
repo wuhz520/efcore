@@ -1117,7 +1117,7 @@ namespace Microsoft.EntityFrameworkCore.InMemory.Query.Internal
 
             var property = member.MemberInfo != null
                 ? entityType.FindProperty(member.MemberInfo)
-                : entityType.FindProperty(member.Name!);
+                : entityType.FindProperty(member.Name);
 
             if (property != null)
             {
