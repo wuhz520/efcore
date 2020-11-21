@@ -326,7 +326,6 @@ namespace Microsoft.EntityFrameworkCore.Infrastructure
             int index,
             IPropertyBase property)
 #pragma warning restore IDE0060 // Remove unused parameter
-        // TODO-NULLABLE: if the buffer contains null but TValue is non-nullable, are we expected to throw here?
             => (TValue)valueBuffer[index]!;
 
         /// <summary>
