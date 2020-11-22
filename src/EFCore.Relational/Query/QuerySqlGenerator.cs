@@ -344,8 +344,6 @@ namespace Microsoft.EntityFrameworkCore.Query
         protected override Expression VisitTable(TableExpression tableExpression)
         {
             Check.NotNull(tableExpression, nameof(tableExpression));
-            Check.DebugAssert(tableExpression.Alias is not null,
-                $"{nameof(tableExpression.Alias)} is null on {nameof(tableExpression)}");
 
             _relationalCommandBuilder
                 .Append(_sqlGenerationHelper.DelimitIdentifier(tableExpression.Name, tableExpression.Schema))
