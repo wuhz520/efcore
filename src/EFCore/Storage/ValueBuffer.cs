@@ -67,7 +67,7 @@ namespace Microsoft.EntityFrameworkCore.Storage
         ///     Gets a value indicating whether the value buffer is empty.
         /// </summary>
         public bool IsEmpty
-        // TODO-NULLABLE: We have an assertion in the ctor that this will never happen? What about _value.Length == 0?
+            // ReSharper disable once ConditionIsAlwaysTrueOrFalse
             => _values == null;
 
         /// <summary>
