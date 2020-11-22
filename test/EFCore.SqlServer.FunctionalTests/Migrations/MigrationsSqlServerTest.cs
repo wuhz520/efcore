@@ -1796,7 +1796,7 @@ SELECT @@ROWCOUNT;");
         private string? GetDatabaseCollation()
         {
             using var ctx = CreateContext();
-            var connection = ctx.Database.GetDbConnection();
+            var connection = ctx.Database.GetDbConnection()!;
             using var command = connection.CreateCommand();
 
             command.CommandText = $@"

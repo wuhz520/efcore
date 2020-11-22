@@ -46,13 +46,14 @@ namespace Microsoft.EntityFrameworkCore.SqlServer.Storage.Internal
             = new SqlServerLongTypeMapping("bigint", DbType.Int64);
 
         private readonly SqlServerByteArrayTypeMapping _rowversion
-            = new SqlServerByteArrayTypeMapping(
+            = new(
                 "rowversion",
                 size: 8,
                 comparer: new ValueComparer<byte[]>(
                     (v1, v2) => StructuralComparisons.StructuralEqualityComparer.Equals(v1, v2),
                     v => StructuralComparisons.StructuralEqualityComparer.GetHashCode(v),
-                    v => v == null ? null : v.ToArray()),
+                    // TODO-NULLABLE: Null is already sanitized externally, clean up as part of #13850
+                    v => v == null ? null! : v.ToArray()),
                 storeTypePostfix: StoreTypePostfix.None);
 
         private readonly IntTypeMapping _int

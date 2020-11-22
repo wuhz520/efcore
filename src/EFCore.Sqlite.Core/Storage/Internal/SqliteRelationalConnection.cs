@@ -131,7 +131,7 @@ namespace Microsoft.EntityFrameworkCore.Sqlite.Storage.Internal
                     },
                     isDeterministic: true);
 
-                sqliteConnection.CreateFunction<object, object, object>(
+                sqliteConnection.CreateFunction<object, object, object?>(
                     "ef_mod",
                     (dividend, divisor) =>
                     {

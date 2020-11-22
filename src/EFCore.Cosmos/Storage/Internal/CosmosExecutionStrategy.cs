@@ -105,7 +105,7 @@ namespace Microsoft.EntityFrameworkCore.Cosmos.Storage.Internal
             {
                 CosmosException cosmosException => IsTransient(cosmosException.StatusCode),
                 HttpException httpException => IsTransient(httpException.Response.StatusCode),
-                WebException webException => IsTransient(((HttpWebResponse)webException.Response).StatusCode),
+                WebException webException => IsTransient(((HttpWebResponse)webException.Response!).StatusCode),
                 _ => false
             };
 
@@ -129,7 +129,7 @@ namespace Microsoft.EntityFrameworkCore.Cosmos.Storage.Internal
                     ?? baseDelay;
         }
 
-        private static TimeSpan? GetDelayFromException(Exception exception)
+        private static TimeSpan? GetDelayFromException(Exception? exception)
         {
             switch (exception)
             {
@@ -155,7 +155,7 @@ namespace Microsoft.EntityFrameworkCore.Cosmos.Storage.Internal
 
                 case WebException webException:
                 {
-                    var response = (HttpWebResponse)webException.Response;
+                    var response = (HttpWebResponse)webException.Response!;
 
                     var delayString = response.Headers.GetValues("x-ms-retry-after-ms")?.FirstOrDefault();
                     if (TryParseMsRetryAfter(delayString, out var delay))
@@ -176,7 +176,7 @@ namespace Microsoft.EntityFrameworkCore.Cosmos.Storage.Internal
                     return null;
             }
 
-            static bool TryParseMsRetryAfter(string delayString, out TimeSpan delay)
+            static bool TryParseMsRetryAfter(string? delayString, out TimeSpan delay)
             {
                 delay = default;
                 if (delayString == null)
@@ -193,7 +193,7 @@ namespace Microsoft.EntityFrameworkCore.Cosmos.Storage.Internal
                 return false;
             }
 
-            static bool TryParseRetryAfter(string delayString, out TimeSpan delay)
+            static bool TryParseRetryAfter(string? delayString, out TimeSpan delay)
             {
                 delay = default;
                 if (delayString == null)
