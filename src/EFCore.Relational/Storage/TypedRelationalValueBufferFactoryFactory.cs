@@ -194,8 +194,7 @@ namespace Microsoft.EntityFrameworkCore.Storage
             bool detailedErrorsEnabled,
             bool box = true)
         {
-            // TODO-NULLABLE: Smit to confirm
-            var getMethod = materializationInfo.Mapping!.GetDataReaderMethod();
+            var getMethod = materializationInfo.Mapping.GetDataReaderMethod();
 
 #pragma warning disable CS0612 // Type or member is obsolete
             index = materializationInfo.Index == -1 ? index : materializationInfo.Index;

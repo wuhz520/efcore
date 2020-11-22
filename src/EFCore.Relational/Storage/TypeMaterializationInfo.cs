@@ -21,105 +21,21 @@ namespace Microsoft.EntityFrameworkCore.Storage
         /// </summary>
         /// <param name="modelClrType"> The type that is needed in the model after conversion. </param>
         /// <param name="property"> The property associated with the type, or <see langword="null" /> if none. </param>
-        /// <param name="typeMappingSource"> The type mapping source to use to find a mapping if the property does not have one already bound. </param>
-        /// <param name="index">
-        ///     The index of the underlying result set that should be used for this type,
-        ///     or -1 if no index mapping is needed.
-        /// </param>
-        [Obsolete]
-        public TypeMaterializationInfo(
-            [NotNull] Type modelClrType,
-            [CanBeNull] IProperty property,
-            [CanBeNull] IRelationalTypeMappingSource typeMappingSource,
-            int index = -1)
-            : this(modelClrType, property, typeMappingSource, null, index)
-        {
-        }
-
-        /// <summary>
-        ///     Creates a new <see cref="TypeMaterializationInfo" /> instance.
-        /// </summary>
-        /// <param name="modelClrType"> The type that is needed in the model after conversion. </param>
-        /// <param name="property"> The property associated with the type, or <see langword="null" /> if none. </param>
-        /// <param name="typeMappingSource"> The type mapping source to use to find a mapping if the property does not have one already bound. </param>
-        /// <param name="fromLeftOuterJoin"> Whether or not the value is coming from a LEFT OUTER JOIN operation. </param>
-        /// <param name="index">
-        ///     The index of the underlying result set that should be used for this type,
-        ///     or -1 if no index mapping is needed.
-        /// </param>
-        [Obsolete]
-        public TypeMaterializationInfo(
-            [NotNull] Type modelClrType,
-            [CanBeNull] IProperty? property,
-            [CanBeNull] IRelationalTypeMappingSource? typeMappingSource,
-            bool? fromLeftOuterJoin,
-            int index)
-            : this(modelClrType, property, typeMappingSource, fromLeftOuterJoin, index, mapping: null)
-        {
-        }
-
-        /// <summary>
-        ///     Creates a new <see cref="TypeMaterializationInfo" /> instance.
-        /// </summary>
-        /// <param name="modelClrType"> The type that is needed in the model after conversion. </param>
-        /// <param name="property"> The property associated with the type, or <see langword="null" /> if none. </param>
         /// <param name="mapping"> The type mapping to use or <see langword="null" /> to infer one. </param>
         /// <param name="nullable"> A value indicating whether the value could be null. </param>
         public TypeMaterializationInfo(
             [NotNull] Type modelClrType,
             [CanBeNull] IProperty? property,
-            [CanBeNull] RelationalTypeMapping? mapping,
+            [NotNull] RelationalTypeMapping mapping,
             bool? nullable = null)
         {
             Check.NotNull(modelClrType, nameof(modelClrType));
 
-            // TODO-NULLABLE:
-            ProviderClrType = mapping?.Converter?.ProviderClrType
-                ?? modelClrType;
-
+            ProviderClrType = mapping.Converter?.ProviderClrType ?? modelClrType;
             ModelClrType = modelClrType;
             Mapping = mapping;
             Property = property;
             IsNullable = nullable;
-        }
-
-        /// <summary>
-        ///     Creates a new <see cref="TypeMaterializationInfo" /> instance.
-        /// </summary>
-        /// <param name="modelClrType"> The type that is needed in the model after conversion. </param>
-        /// <param name="property"> The property associated with the type, or <see langword="null" /> if none. </param>
-        /// <param name="typeMappingSource"> The type mapping source to use to find a mapping if the property does not have one already bound. </param>
-        /// <param name="fromLeftOuterJoin"> Whether or not the value is coming from a LEFT OUTER JOIN operation. </param>
-        /// <param name="index">
-        ///     The index of the underlying result set that should be used for this type,
-        ///     or -1 if no index mapping is needed.
-        /// </param>
-        /// <param name="mapping"> The type mapping to use or <see langword="null" /> to infer one. </param>
-        [Obsolete]
-        public TypeMaterializationInfo(
-            [NotNull] Type modelClrType,
-            [CanBeNull] IProperty? property,
-            [CanBeNull] IRelationalTypeMappingSource? typeMappingSource,
-            bool? fromLeftOuterJoin,
-            int index = -1,
-            [CanBeNull] RelationalTypeMapping? mapping = null)
-        {
-            Check.NotNull(modelClrType, nameof(modelClrType));
-
-            if (mapping == null)
-            {
-                mapping = property?.GetRelationalTypeMapping()
-                    ?? typeMappingSource?.GetMapping(modelClrType);
-            }
-
-            ProviderClrType = mapping?.Converter?.ProviderClrType
-                ?? modelClrType;
-
-            ModelClrType = modelClrType;
-            Mapping = mapping;
-            Property = property;
-            Index = index;
-            IsFromLeftOuterJoin = fromLeftOuterJoin;
         }
 
         /// <summary>
@@ -135,7 +51,7 @@ namespace Microsoft.EntityFrameworkCore.Storage
         /// <summary>
         ///     The type mapping for the value to be read.
         /// </summary>
-        public virtual RelationalTypeMapping? Mapping { get; }
+        public virtual RelationalTypeMapping Mapping { get; }
 
         /// <summary>
         ///     The property associated with the type, or <see langword="null" /> if none.
