@@ -90,9 +90,8 @@ namespace Microsoft.EntityFrameworkCore.Storage
         /// </summary>
         public virtual Guid ConnectionId { get; } = Guid.NewGuid();
 
-        // TODO-NULLABLE: Can this actually return null (see comment)?
         /// <summary>
-        ///     The <see cref="DbContext" /> currently in use, or null if not known.
+        ///     The <see cref="DbContext" /> currently in use.
         /// </summary>
         public virtual DbContext Context { get; }
 
@@ -242,7 +241,6 @@ namespace Microsoft.EntityFrameworkCore.Storage
         ///     by providers to make a different call instead.
         /// </summary>
         /// <param name="transaction"> The transaction to be used. </param>
-        // TODO-NULLABLE: This gets called with null, and DbConnection.EnlistTransaction does accept null
         protected virtual void ConnectionEnlistTransaction([CanBeNull] Transaction? transaction)
              => DbConnection.EnlistTransaction(transaction);
 
@@ -311,7 +309,7 @@ namespace Microsoft.EntityFrameworkCore.Storage
 
             var dbTransaction = interceptionResult.HasResult
                 ? interceptionResult.Result
-                : ConnectionBeginTransation(isolationLevel);
+                : ConnectionBeginTransaction(isolationLevel);
 
             dbTransaction = Dependencies.TransactionLogger.TransactionStarted(
                 this,
@@ -329,8 +327,7 @@ namespace Microsoft.EntityFrameworkCore.Storage
         /// </summary>
         /// <param name="isolationLevel"> The isolation level to use for the transaction. </param>
         /// <returns> The newly created transaction. </returns>
-        // TODO-NULLABLE: Spelling mistake :(
-        protected virtual DbTransaction ConnectionBeginTransation(IsolationLevel isolationLevel)
+        protected virtual DbTransaction ConnectionBeginTransaction(IsolationLevel isolationLevel)
              => DbConnection.BeginTransaction(isolationLevel);
 
         /// <summary>
@@ -364,7 +361,7 @@ namespace Microsoft.EntityFrameworkCore.Storage
 
             var dbTransaction = interceptionResult.HasResult
                 ? interceptionResult.Result
-                : await ConnectionBeginTransationAsync(isolationLevel, cancellationToken).ConfigureAwait(false);
+                : await ConnectionBeginTransactionAsync(isolationLevel, cancellationToken).ConfigureAwait(false);
 
             dbTransaction = await Dependencies.TransactionLogger.TransactionStartedAsync(
                     this,
@@ -386,7 +383,7 @@ namespace Microsoft.EntityFrameworkCore.Storage
         /// <param name="cancellationToken"> A <see cref="CancellationToken" /> to observe while waiting for the task to complete. </param>
         /// <returns> The newly created transaction. </returns>
         // TODO-NULLABLE: Spelling mistake :(
-        protected virtual ValueTask<DbTransaction> ConnectionBeginTransationAsync(
+        protected virtual ValueTask<DbTransaction> ConnectionBeginTransactionAsync(
             IsolationLevel isolationLevel,
             CancellationToken cancellationToken = default)
              => DbConnection.BeginTransactionAsync(isolationLevel, cancellationToken);
@@ -431,8 +428,11 @@ namespace Microsoft.EntityFrameworkCore.Storage
         /// </summary>
         /// <param name="transaction"> The transaction to be used. </param>
         /// <param name="transactionId"> The unique identifier for the transaction. </param>
-        /// <returns> An instance of <see cref="IDbTransaction" /> that wraps the provided transaction. </returns>
-        // TODO-NULLABLE: Note that this can return null (if correct, need to update doc comment)
+        /// <returns>
+        ///     An instance of <see cref="IDbContextTransaction" /> that wraps the provided transaction, or <see langword="null" />
+        ///     if <paramref name="transaction" /> is <see langword="null" />.
+        /// </returns>
+        [return: CA.NotNullIfNotNull("transaction")]
         public virtual IDbContextTransaction? UseTransaction(DbTransaction? transaction, Guid transactionId)
         {
             if (ShouldUseTransaction(transaction))

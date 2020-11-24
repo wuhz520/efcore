@@ -58,7 +58,7 @@ namespace Microsoft.EntityFrameworkCore.Storage
         [EntityFrameworkInternal]
         public ExecutionStrategyDependencies(
             [NotNull] ICurrentDbContext currentContext,
-            [CanBeNull] IDbContextOptions? options,
+            [NotNull] IDbContextOptions options,
             [NotNull] IDiagnosticsLogger<DbLoggerCategory.Infrastructure> logger)
         {
             Check.NotNull(currentContext, nameof(currentContext));
@@ -71,7 +71,7 @@ namespace Microsoft.EntityFrameworkCore.Storage
         /// <summary>
         ///     The options for the current <see cref="DbContext" /> instance.
         /// </summary>
-        public IDbContextOptions? Options { get; [param: CanBeNull] init; }
+        public IDbContextOptions Options { get; [param: NotNull] init; }
 
         /// <summary>
         ///     Indirection to the current <see cref="DbContext" /> instance.
@@ -81,6 +81,6 @@ namespace Microsoft.EntityFrameworkCore.Storage
         /// <summary>
         ///     The logger.
         /// </summary>
-        public IDiagnosticsLogger<DbLoggerCategory.Infrastructure> Logger { get; [param: CanBeNull] init; }
+        public IDiagnosticsLogger<DbLoggerCategory.Infrastructure> Logger { get; [param: NotNull] init; }
     }
 }

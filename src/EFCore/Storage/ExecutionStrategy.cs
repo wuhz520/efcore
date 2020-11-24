@@ -396,8 +396,6 @@ namespace Microsoft.EntityFrameworkCore.Storage
         public static TResult CallOnWrappedException<TResult>(
             [CanBeNull] Exception? exception,
             [NotNull] Func<Exception?, TResult> exceptionHandler)
-            // TODO-NULLABLE: It's a bit weird to call the handler with a null exception. We could refactor this as UnwrapDbUpdateException,
-            // but that would be a breaking change.
             => exception is DbUpdateException dbUpdateException
                 ? CallOnWrappedException(dbUpdateException.InnerException, exceptionHandler)
                 : exceptionHandler(exception);

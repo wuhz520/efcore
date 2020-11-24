@@ -565,8 +565,6 @@ namespace Microsoft.EntityFrameworkCore.Query
         protected override Expression VisitSqlParameter(SqlParameterExpression sqlParameterExpression)
         {
             Check.NotNull(sqlParameterExpression, nameof(sqlParameterExpression));
-            Check.DebugAssert(sqlParameterExpression.TypeMapping is not null,
-                $"{nameof(sqlParameterExpression.TypeMapping)} is null on {nameof(sqlParameterExpression)}");
 
             var parameterNameInCommand = _sqlGenerationHelper.GenerateParameterName(sqlParameterExpression.Name);
 
@@ -576,7 +574,7 @@ namespace Microsoft.EntityFrameworkCore.Query
                 _relationalCommandBuilder.AddParameter(
                     sqlParameterExpression.Name,
                     parameterNameInCommand,
-                    sqlParameterExpression.TypeMapping,
+                    sqlParameterExpression.TypeMapping!,
                     sqlParameterExpression.IsNullable);
             }
 

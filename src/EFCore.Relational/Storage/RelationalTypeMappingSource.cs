@@ -102,8 +102,9 @@ namespace Microsoft.EntityFrameworkCore.Storage
             ValueConverter? customConverter = null;
             if (principals != null)
             {
-                foreach (var principal in principals)
+                for (var i = 0; i < principals.Count; i++)
                 {
+                    var principal = principals[i];
                     if (providerClrType == null)
                     {
                         var providerType = principal.GetProviderClrType();
