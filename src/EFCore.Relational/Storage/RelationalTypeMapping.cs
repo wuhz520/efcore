@@ -278,18 +278,10 @@ namespace Microsoft.EntityFrameworkCore.Storage
             Parameters = parameters;
 
             var storeType = parameters.StoreType;
+            var storeTypeNameBase = GetBaseName(storeType);
 
-            // TODO-NULLABLE: It seems like RelationalTypeMappingParameters.StoreType is non-nullable, so this check is redundant?
-            // TODO-NULLABLE: That would also means that StoreTypeNameBase is non-nullable
-            if (storeType != null)
-            {
-                var storeTypeNameBase = GetBaseName(storeType);
-                StoreTypeNameBase = storeTypeNameBase;
-
-                storeType = ProcessStoreType(parameters, storeType, storeTypeNameBase);
-            }
-
-            StoreType = storeType;
+            StoreTypeNameBase = storeTypeNameBase;
+            StoreType = ProcessStoreType(parameters, storeType, storeTypeNameBase);
         }
 
         /// <summary>
