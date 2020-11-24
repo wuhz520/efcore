@@ -329,11 +329,9 @@ namespace Microsoft.EntityFrameworkCore.Query
         protected override Expression VisitColumn(ColumnExpression columnExpression)
         {
             Check.NotNull(columnExpression, nameof(columnExpression));
-            Check.DebugAssert(columnExpression.Table.Alias is not null,
-                $"{nameof(columnExpression.Table.Alias)} is null on {nameof(columnExpression)}.{nameof(columnExpression.Table)}");
 
             _relationalCommandBuilder
-                .Append(_sqlGenerationHelper.DelimitIdentifier(columnExpression.Table.Alias))
+                .Append(_sqlGenerationHelper.DelimitIdentifier(columnExpression.Table.Alias!))
                 .Append(".")
                 .Append(_sqlGenerationHelper.DelimitIdentifier(columnExpression.Name));
 
