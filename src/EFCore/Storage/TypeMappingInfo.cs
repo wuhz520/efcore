@@ -61,8 +61,9 @@ namespace Microsoft.EntityFrameworkCore.Storage
             int? precision = null;
             int? scale = null;
             bool? isUnicode = null;
-            foreach (var principal in principals)
+            for (var i = 0; i < principals.Count; i++)
             {
+                var principal = principals[i];
                 if (customConverter == null)
                 {
                     var converter = principal.GetValueConverter();
