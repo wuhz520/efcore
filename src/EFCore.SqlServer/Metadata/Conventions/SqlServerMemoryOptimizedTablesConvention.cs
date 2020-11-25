@@ -7,6 +7,8 @@ using Microsoft.EntityFrameworkCore.Metadata.Builders;
 using Microsoft.EntityFrameworkCore.Metadata.Conventions.Infrastructure;
 using Microsoft.EntityFrameworkCore.SqlServer.Metadata.Internal;
 
+#nullable enable
+
 // ReSharper disable once CheckNamespace
 namespace Microsoft.EntityFrameworkCore.Metadata.Conventions
 {
@@ -46,8 +48,8 @@ namespace Microsoft.EntityFrameworkCore.Metadata.Conventions
         public virtual void ProcessEntityTypeAnnotationChanged(
             IConventionEntityTypeBuilder entityTypeBuilder,
             string name,
-            IConventionAnnotation annotation,
-            IConventionAnnotation oldAnnotation,
+            IConventionAnnotation? annotation,
+            IConventionAnnotation? oldAnnotation,
             IConventionContext<IConventionAnnotation> context)
         {
             if (name == SqlServerAnnotationNames.MemoryOptimized)
@@ -55,13 +57,13 @@ namespace Microsoft.EntityFrameworkCore.Metadata.Conventions
                 var memoryOptimized = annotation?.Value as bool? == true;
                 foreach (var key in entityTypeBuilder.Metadata.GetDeclaredKeys())
                 {
-                    key.Builder.IsClustered(memoryOptimized ? false : (bool?)null);
+                    key.Builder!.IsClustered(memoryOptimized ? false : (bool?)null);
                 }
 
                 foreach (var index in
                     entityTypeBuilder.Metadata.GetDerivedTypesInclusive().SelectMany(et => et.GetDeclaredIndexes()))
                 {
-                    index.Builder.IsClustered(memoryOptimized ? false : (bool?)null);
+                    index.Builder!.IsClustered(memoryOptimized ? false : (bool?)null);
                 }
             }
         }

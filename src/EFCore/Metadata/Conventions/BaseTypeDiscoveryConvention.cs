@@ -10,6 +10,8 @@ using Microsoft.EntityFrameworkCore.Metadata.Conventions.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata.Internal;
 using Microsoft.EntityFrameworkCore.Utilities;
 
+#nullable enable
+
 namespace Microsoft.EntityFrameworkCore.Metadata.Conventions
 {
     /// <summary>
@@ -49,7 +51,7 @@ namespace Microsoft.EntityFrameworkCore.Metadata.Conventions
             }
 
             var model = entityType.Model;
-            var derivedTypesMap = (Dictionary<Type, List<IConventionEntityType>>)model[CoreAnnotationNames.DerivedTypes];
+            var derivedTypesMap = (Dictionary<Type, List<IConventionEntityType>>?)model[CoreAnnotationNames.DerivedTypes];
             if (derivedTypesMap == null)
             {
                 derivedTypesMap = new Dictionary<Type, List<IConventionEntityType>>();
@@ -61,7 +63,7 @@ namespace Microsoft.EntityFrameworkCore.Metadata.Conventions
             {
                 foreach (var derivedType in derivedTypes)
                 {
-                    derivedType.Builder.HasBaseType(entityType);
+                    derivedType.Builder!.HasBaseType(entityType);
 
                     var otherBaseType = baseType;
                     while (otherBaseType != typeof(object))
@@ -83,7 +85,7 @@ namespace Microsoft.EntityFrameworkCore.Metadata.Conventions
                 return;
             }
 
-            IConventionEntityType baseEntityType = null;
+            IConventionEntityType? baseEntityType = null;
             while (baseEntityType == null
                 && baseType != typeof(object)
                 && baseType != null)
@@ -104,13 +106,10 @@ namespace Microsoft.EntityFrameworkCore.Metadata.Conventions
 
             if (!baseEntityType.HasSharedClrType
                 && !baseEntityType.HasDefiningNavigation()
-                && baseEntityType.FindOwnership() == null)
+                && baseEntityType.FindOwnership() == null
+                && entityTypeBuilder.HasBaseType(baseEntityType) is IConventionEntityTypeBuilder builder)
             {
-                entityTypeBuilder = entityTypeBuilder.HasBaseType(baseEntityType);
-                if (entityTypeBuilder != null)
-                {
-                    context.StopProcessingIfChanged(entityTypeBuilder);
-                }
+                context.StopProcessingIfChanged(builder);
             }
         }
 
@@ -125,7 +124,7 @@ namespace Microsoft.EntityFrameworkCore.Metadata.Conventions
             {
                 foreach (var derivedType in foreignKey.DeclaringEntityType.GetDirectlyDerivedTypes().ToList())
                 {
-                    derivedType.Builder.HasBaseType(null);
+                    derivedType.Builder!.HasBaseType(null);
                 }
             }
         }

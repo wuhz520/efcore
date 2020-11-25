@@ -9,6 +9,8 @@ using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata.Internal;
 using Microsoft.EntityFrameworkCore.Utilities;
 
+#nullable enable
+
 namespace Microsoft.EntityFrameworkCore.Metadata.Builders
 {
     /// <summary>
@@ -120,10 +122,10 @@ namespace Microsoft.EntityFrameworkCore.Metadata.Builders
             Check.NotNull(configureRight, nameof(configureRight));
             Check.NotNull(configureLeft, nameof(configureLeft));
 
-            var existingJoinEntityType = (EntityType)
+            var existingJoinEntityType = (EntityType?)
                 (LeftNavigation.ForeignKey?.DeclaringEntityType
                     ?? RightNavigation.ForeignKey?.DeclaringEntityType);
-            EntityType newJoinEntityType = null;
+            EntityType? newJoinEntityType = null;
             if (existingJoinEntityType != null)
             {
                 if (existingJoinEntityType.ClrType == joinEntityType
@@ -171,10 +173,10 @@ namespace Microsoft.EntityFrameworkCore.Metadata.Builders
             Check.NotNull(configureRight, nameof(configureRight));
             Check.NotNull(configureLeft, nameof(configureLeft));
 
-            var existingJoinEntityType = (EntityType)
+            var existingJoinEntityType = (EntityType?)
                 (LeftNavigation.ForeignKey?.DeclaringEntityType
                     ?? RightNavigation.ForeignKey?.DeclaringEntityType);
-            EntityType newJoinEntityType = null;
+            EntityType? newJoinEntityType = null;
             if (existingJoinEntityType != null)
             {
                 if (existingJoinEntityType.ClrType == joinEntityType
@@ -279,8 +281,8 @@ namespace Microsoft.EntityFrameworkCore.Metadata.Builders
         [EntityFrameworkInternal]
         protected virtual void Using([NotNull] IMutableForeignKey rightForeignKey, [NotNull] IMutableForeignKey leftForeignKey)
         {
-            var leftBuilder = ((SkipNavigation)LeftNavigation).Builder;
-            var rightBuilder = ((SkipNavigation)RightNavigation).Builder;
+            var leftBuilder = ((SkipNavigation)LeftNavigation).Builder!;
+            var rightBuilder = ((SkipNavigation)RightNavigation).Builder!;
 
             leftBuilder = leftBuilder.HasInverse(rightBuilder.Metadata, ConfigurationSource.Explicit);
 
@@ -295,13 +297,13 @@ namespace Microsoft.EntityFrameworkCore.Metadata.Builders
 
         /// <inheritdoc />
         [EditorBrowsable(EditorBrowsableState.Never)]
-        public override string ToString()
+        public override string? ToString()
             => base.ToString();
 
         /// <inheritdoc />
         [EditorBrowsable(EditorBrowsableState.Never)]
         // ReSharper disable once BaseObjectEqualsIsObjectEquals
-        public override bool Equals(object obj)
+        public override bool Equals(object? obj)
             => base.Equals(obj);
 
         /// <inheritdoc />

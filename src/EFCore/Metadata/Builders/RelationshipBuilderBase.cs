@@ -8,6 +8,8 @@ using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata.Internal;
 using Microsoft.EntityFrameworkCore.Utilities;
 
+#nullable enable
+
 namespace Microsoft.EntityFrameworkCore.Metadata.Builders
 {
     /// <summary>
@@ -15,8 +17,8 @@ namespace Microsoft.EntityFrameworkCore.Metadata.Builders
     /// </summary>
     public abstract class RelationshipBuilderBase : IInfrastructure<IConventionForeignKeyBuilder>
     {
-        private readonly IReadOnlyList<Property> _foreignKeyProperties;
-        private readonly IReadOnlyList<Property> _principalKeyProperties;
+        private readonly IReadOnlyList<Property>? _foreignKeyProperties;
+        private readonly IReadOnlyList<Property>? _principalKeyProperties;
         private readonly bool? _required;
 
         /// <summary>
@@ -30,7 +32,7 @@ namespace Microsoft.EntityFrameworkCore.Metadata.Builders
             [NotNull] IMutableEntityType principalEntityType,
             [NotNull] IMutableEntityType dependentEntityType,
             [NotNull] IMutableForeignKey foreignKey)
-            : this(((ForeignKey)foreignKey).Builder, null)
+            : this(((ForeignKey)foreignKey).Builder!, null)
         {
             PrincipalEntityType = principalEntityType;
             DependentEntityType = dependentEntityType;
@@ -45,7 +47,7 @@ namespace Microsoft.EntityFrameworkCore.Metadata.Builders
         [EntityFrameworkInternal]
         protected RelationshipBuilderBase(
             [NotNull] InternalForeignKeyBuilder builder,
-            [CanBeNull] RelationshipBuilderBase oldBuilder,
+            [CanBeNull] RelationshipBuilderBase? oldBuilder,
             bool foreignKeySet = false,
             bool principalKeySet = false,
             bool requiredSet = false)
@@ -53,6 +55,8 @@ namespace Microsoft.EntityFrameworkCore.Metadata.Builders
             Check.NotNull(builder, nameof(builder));
 
             Builder = builder;
+            // TODO-NULLABLE: If oldBuilder is null, PrincipalEntityType and DependentEntityType are uninitialized and this class doesn't
+            // really work.
             if (oldBuilder != null)
             {
                 PrincipalEntityType = oldBuilder.PrincipalEntityType;
@@ -126,7 +130,7 @@ namespace Microsoft.EntityFrameworkCore.Metadata.Builders
         /// </summary>
         /// <returns> A string that represents the current object. </returns>
         [EditorBrowsable(EditorBrowsableState.Never)]
-        public override string ToString()
+        public override string? ToString()
             => base.ToString();
 
         /// <summary>
@@ -136,7 +140,7 @@ namespace Microsoft.EntityFrameworkCore.Metadata.Builders
         /// <returns> <see langword="true" /> if the specified object is equal to the current object; otherwise, <see langword="false" />. </returns>
         [EditorBrowsable(EditorBrowsableState.Never)]
         // ReSharper disable once BaseObjectEqualsIsObjectEquals
-        public override bool Equals(object obj)
+        public override bool Equals(object? obj)
             => base.Equals(obj);
 
         /// <summary>

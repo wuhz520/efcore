@@ -7,6 +7,8 @@ using JetBrains.Annotations;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
 using Microsoft.EntityFrameworkCore.Metadata.Conventions.Infrastructure;
 
+#nullable enable
+
 namespace Microsoft.EntityFrameworkCore.Metadata.Conventions
 {
     /// <summary>
@@ -69,7 +71,7 @@ namespace Microsoft.EntityFrameworkCore.Metadata.Conventions
         {
             foreach (var function in modelBuilder.Metadata.GetDbFunctions())
             {
-                ProcessDbFunctionAdded(function.Builder, context);
+                ProcessDbFunctionAdded(function.Builder!, context);
             }
         }
 

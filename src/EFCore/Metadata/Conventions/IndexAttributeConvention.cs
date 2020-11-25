@@ -10,6 +10,8 @@ using Microsoft.EntityFrameworkCore.Metadata.Builders;
 using Microsoft.EntityFrameworkCore.Metadata.Conventions.Infrastructure;
 using Microsoft.EntityFrameworkCore.Utilities;
 
+#nullable enable
+
 namespace Microsoft.EntityFrameworkCore.Metadata.Conventions
 {
     /// <summary>
@@ -40,8 +42,8 @@ namespace Microsoft.EntityFrameworkCore.Metadata.Conventions
         /// <inheritdoc />
         public virtual void ProcessEntityTypeBaseTypeChanged(
             IConventionEntityTypeBuilder entityTypeBuilder,
-            IConventionEntityType newBaseType,
-            IConventionEntityType oldBaseType,
+            IConventionEntityType? newBaseType,
+            IConventionEntityType? oldBaseType,
             IConventionContext<IConventionEntityType> context)
         {
             if (oldBaseType == null)
@@ -75,7 +77,7 @@ namespace Microsoft.EntityFrameworkCore.Metadata.Conventions
             foreach (var indexAttribute in
                 entityType.ClrType.GetCustomAttributes<IndexAttribute>(true))
             {
-                IConventionIndexBuilder indexBuilder;
+                IConventionIndexBuilder? indexBuilder;
                 if (!shouldThrow)
                 {
                     var indexProperties = new List<IConventionProperty>();
@@ -91,9 +93,9 @@ namespace Microsoft.EntityFrameworkCore.Metadata.Conventions
                     }
 
                     indexBuilder = indexAttribute.Name == null
-                        ? entityType.Builder.HasIndex(
+                        ? entityType.Builder!.HasIndex(
                             indexProperties, fromDataAnnotation: true)
-                        : entityType.Builder.HasIndex(
+                        : entityType.Builder!.HasIndex(
                             indexProperties, indexAttribute.Name, fromDataAnnotation: true);
                 }
                 else
@@ -104,9 +106,9 @@ namespace Microsoft.EntityFrameworkCore.Metadata.Conventions
                         // a chance to create a missing property
                         // e.g. if the CLR property existed but was non-public.
                         indexBuilder = indexAttribute.Name == null
-                            ? entityType.Builder.HasIndex(
+                            ? entityType.Builder!.HasIndex(
                                 indexAttribute.PropertyNames, fromDataAnnotation: true)
-                            : entityType.Builder.HasIndex(
+                            : entityType.Builder!.HasIndex(
                                 indexAttribute.PropertyNames, indexAttribute.Name, fromDataAnnotation: true);
                     }
                     catch (InvalidOperationException exception)
@@ -134,7 +136,7 @@ namespace Microsoft.EntityFrameworkCore.Metadata.Conventions
         {
             foreach (var propertyName in indexAttribute.PropertyNames)
             {
-                if (entityType.Builder.IsIgnored(propertyName, fromDataAnnotation: true))
+                if (entityType.Builder!.IsIgnored(propertyName, fromDataAnnotation: true))
                 {
                     if (indexAttribute.Name == null)
                     {

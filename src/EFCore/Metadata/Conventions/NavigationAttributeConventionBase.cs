@@ -12,6 +12,8 @@ using Microsoft.EntityFrameworkCore.Metadata.Conventions.Internal;
 using Microsoft.EntityFrameworkCore.Metadata.Internal;
 using Microsoft.EntityFrameworkCore.Utilities;
 
+#nullable enable
+
 namespace Microsoft.EntityFrameworkCore.Metadata.Conventions
 {
     /// <summary>
@@ -79,7 +81,7 @@ namespace Microsoft.EntityFrameworkCore.Metadata.Conventions
         public virtual void ProcessEntityTypeIgnored(
             IConventionModelBuilder modelBuilder,
             string name,
-            Type type,
+            Type? type,
             IConventionContext<string> context)
         {
             if (type == null)
@@ -157,8 +159,8 @@ namespace Microsoft.EntityFrameworkCore.Metadata.Conventions
         /// <inheritdoc />
         public virtual void ProcessEntityTypeBaseTypeChanged(
             IConventionEntityTypeBuilder entityTypeBuilder,
-            IConventionEntityType newBaseType,
-            IConventionEntityType oldBaseType,
+            IConventionEntityType? newBaseType,
+            IConventionEntityType? oldBaseType,
             IConventionContext<IConventionEntityType> context)
         {
             var entityType = entityTypeBuilder.Metadata;
@@ -190,7 +192,7 @@ namespace Microsoft.EntityFrameworkCore.Metadata.Conventions
             }
         }
 
-        private List<(PropertyInfo, Type)> GetNavigationsWithAttribute(IConventionEntityType entityType)
+        private List<(PropertyInfo, Type)>? GetNavigationsWithAttribute(IConventionEntityType entityType)
         {
             var navigations = new List<(PropertyInfo, Type)>();
             foreach (var navigationPropertyInfo in entityType.GetRuntimeProperties().Values)
@@ -296,7 +298,7 @@ namespace Microsoft.EntityFrameworkCore.Metadata.Conventions
             }
         }
 
-        private Type FindCandidateNavigationWithAttributePropertyType([NotNull] PropertyInfo propertyInfo)
+        private Type? FindCandidateNavigationWithAttributePropertyType([NotNull] PropertyInfo propertyInfo)
         {
             var targetClrType = Dependencies.MemberClassifier.FindCandidateNavigationPropertyType(propertyInfo);
             return targetClrType == null
@@ -333,7 +335,7 @@ namespace Microsoft.EntityFrameworkCore.Metadata.Conventions
 
         private static IEnumerable<TCustomAttribute> GetAttributes<TCustomAttribute>(
             [NotNull] IConventionEntityType entityType,
-            [NotNull] MemberInfo memberInfo)
+            [CanBeNull] MemberInfo? memberInfo)
             where TCustomAttribute : Attribute
         {
             if (!entityType.HasClrType
@@ -411,8 +413,8 @@ namespace Microsoft.EntityFrameworkCore.Metadata.Conventions
         /// <param name="context"> Additional information associated with convention execution. </param>
         public virtual void ProcessEntityTypeBaseTypeChanged(
             [NotNull] IConventionEntityTypeBuilder entityTypeBuilder,
-            [CanBeNull] IConventionEntityType newBaseType,
-            [CanBeNull] IConventionEntityType oldBaseType,
+            [CanBeNull] IConventionEntityType? newBaseType,
+            [CanBeNull] IConventionEntityType? oldBaseType,
             [NotNull] MemberInfo navigationMemberInfo,
             [NotNull] Type targetClrType,
             [NotNull] TAttribute attribute,
@@ -468,8 +470,8 @@ namespace Microsoft.EntityFrameworkCore.Metadata.Conventions
         /// <param name="context"> Additional information associated with convention execution. </param>
         public virtual void ProcessForeignKeyPrincipalEndChanged(
             [NotNull] IConventionForeignKeyBuilder relationshipBuilder,
-            [CanBeNull] IEnumerable<TAttribute> dependentToPrincipalAttributes,
-            [CanBeNull] IEnumerable<TAttribute> principalToDependentAttributes,
+            [CanBeNull] IEnumerable<TAttribute>? dependentToPrincipalAttributes,
+            [CanBeNull] IEnumerable<TAttribute>? principalToDependentAttributes,
             [NotNull] IConventionContext<IConventionForeignKeyBuilder> context)
             => throw new NotImplementedException();
     }

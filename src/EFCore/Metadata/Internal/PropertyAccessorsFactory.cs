@@ -12,6 +12,8 @@ using Microsoft.EntityFrameworkCore.Internal;
 using Microsoft.EntityFrameworkCore.Storage;
 using Microsoft.EntityFrameworkCore.Update;
 
+#nullable enable
+
 namespace Microsoft.EntityFrameworkCore.Metadata.Internal
 {
     /// <summary>
@@ -31,11 +33,10 @@ namespace Microsoft.EntityFrameworkCore.Metadata.Internal
         public virtual PropertyAccessors Create([NotNull] IPropertyBase propertyBase)
             => (PropertyAccessors)_genericCreate
                 .MakeGenericMethod(propertyBase.ClrType)
-                .Invoke(
-                    null, new object[] { propertyBase });
+                .Invoke(null, new object[] { propertyBase })!;
 
         private static readonly MethodInfo _genericCreate
-            = typeof(PropertyAccessorsFactory).GetTypeInfo().GetDeclaredMethod(nameof(CreateGeneric));
+            = typeof(PropertyAccessorsFactory).GetTypeInfo().GetDeclaredMethod(nameof(CreateGeneric))!;
 
         [UsedImplicitly]
         private static PropertyAccessors CreateGeneric<TProperty>(IPropertyBase propertyBase)
@@ -54,7 +55,7 @@ namespace Microsoft.EntityFrameworkCore.Metadata.Internal
             IPropertyBase propertyBase,
             bool useStoreGeneratedValues)
         {
-            var entityClrType = propertyBase.DeclaringType.ClrType;
+            var entityClrType = propertyBase.DeclaringType.ClrType!;
             var updateParameter = Expression.Parameter(typeof(IUpdateEntry), "entry");
             var entryParameter = Expression.Convert(updateParameter, typeof(InternalEntityEntry));
 

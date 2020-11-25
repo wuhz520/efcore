@@ -7,6 +7,8 @@ using Microsoft.EntityFrameworkCore.Metadata.Builders;
 using Microsoft.EntityFrameworkCore.Metadata.Conventions.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata.Internal;
 
+#nullable enable
+
 namespace Microsoft.EntityFrameworkCore.Metadata.Conventions
 {
     /// <summary>
@@ -57,7 +59,7 @@ namespace Microsoft.EntityFrameworkCore.Metadata.Conventions
                         && ((directlyDerivedType.BaseType == null && clrType.IsAssignableFrom(directlyDerivedType.ClrType))
                             || (directlyDerivedType.BaseType == entityType.BaseType && FindClosestBaseType(directlyDerivedType) == entityType)))
                 {
-                    directlyDerivedType.Builder.HasBaseType(entityType);
+                    directlyDerivedType.Builder!.HasBaseType(entityType);
                 }
             }
         }

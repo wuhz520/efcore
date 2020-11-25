@@ -11,6 +11,8 @@ using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata.Internal;
 using Microsoft.EntityFrameworkCore.Utilities;
 
+#nullable enable
+
 namespace Microsoft.EntityFrameworkCore.Metadata.Builders
 {
     /// <summary>
@@ -210,7 +212,7 @@ namespace Microsoft.EntityFrameworkCore.Metadata.Builders
         /// </param>
         /// <returns> An object that can be used to configure the relationship. </returns>
         public new virtual OwnershipBuilder<TEntity, TDependentEntity> WithOwner(
-            [CanBeNull] string ownerReference = null)
+            [CanBeNull] string? ownerReference = null)
         {
             Check.NullButNotEmpty(ownerReference, nameof(ownerReference));
 
@@ -220,7 +222,7 @@ namespace Microsoft.EntityFrameworkCore.Metadata.Builders
                 Builder.HasNavigation(
                     ownerReference,
                     pointsToPrincipal: true,
-                    ConfigurationSource.Explicit).Metadata);
+                    ConfigurationSource.Explicit)!.Metadata);
         }
 
         /// <summary>
@@ -247,7 +249,7 @@ namespace Microsoft.EntityFrameworkCore.Metadata.Builders
                 Builder.HasNavigation(
                     referenceExpression?.GetMemberAccess(),
                     pointsToPrincipal: true,
-                    ConfigurationSource.Explicit).Metadata);
+                    ConfigurationSource.Explicit)!.Metadata);
 
         /// <summary>
         ///     <para>
@@ -638,7 +640,7 @@ namespace Microsoft.EntityFrameworkCore.Metadata.Builders
             InternalForeignKeyBuilder relationship;
             using (var batch = DependentEntityType.Model.ConventionDispatcher.DelayConventions())
             {
-                relationship = DependentEntityType.Builder.HasOwnership(ownedType, navigation, ConfigurationSource.Explicit);
+                relationship = DependentEntityType.Builder.HasOwnership(ownedType, navigation, ConfigurationSource.Explicit)!;
                 relationship.IsUnique(true, ConfigurationSource.Explicit);
                 relationship = (InternalForeignKeyBuilder)batch.Run(relationship.Metadata).Builder;
             }
@@ -1036,7 +1038,7 @@ namespace Microsoft.EntityFrameworkCore.Metadata.Builders
             InternalForeignKeyBuilder relationship;
             using (var batch = DependentEntityType.Model.ConventionDispatcher.DelayConventions())
             {
-                relationship = DependentEntityType.Builder.HasOwnership(ownedType, navigation, ConfigurationSource.Explicit);
+                relationship = DependentEntityType.Builder.HasOwnership(ownedType, navigation, ConfigurationSource.Explicit)!;
                 relationship.IsUnique(false, ConfigurationSource.Explicit);
                 relationship = (InternalForeignKeyBuilder)batch.Run(relationship.Metadata).Builder;
             }
@@ -1071,7 +1073,7 @@ namespace Microsoft.EntityFrameworkCore.Metadata.Builders
         /// </param>
         /// <returns> An object that can be used to configure the relationship. </returns>
         public virtual ReferenceNavigationBuilder<TDependentEntity, TNewRelatedEntity> HasOne<TNewRelatedEntity>(
-            [CanBeNull] string navigationName)
+            [CanBeNull] string? navigationName)
             where TNewRelatedEntity : class
         {
             var relatedEntityType = FindRelatedEntityType(typeof(TNewRelatedEntity), navigationName);
@@ -1114,7 +1116,7 @@ namespace Microsoft.EntityFrameworkCore.Metadata.Builders
         /// </param>
         /// <returns> An object that can be used to configure the relationship. </returns>
         public virtual ReferenceNavigationBuilder<TDependentEntity, TNewRelatedEntity> HasOne<TNewRelatedEntity>(
-            [CanBeNull] Expression<Func<TDependentEntity, TNewRelatedEntity>> navigationExpression = null)
+            [CanBeNull] Expression<Func<TDependentEntity, TNewRelatedEntity>>? navigationExpression = null)
             where TNewRelatedEntity : class
         {
             var navigation = navigationExpression?.GetMemberAccess();

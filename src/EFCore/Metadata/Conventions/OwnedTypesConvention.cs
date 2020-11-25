@@ -7,6 +7,8 @@ using Microsoft.EntityFrameworkCore.Metadata.Builders;
 using Microsoft.EntityFrameworkCore.Metadata.Conventions.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata.Internal;
 
+#nullable enable
+
 namespace Microsoft.EntityFrameworkCore.Metadata.Conventions
 {
     /// <summary>
@@ -53,7 +55,7 @@ namespace Microsoft.EntityFrameworkCore.Metadata.Conventions
             {
                 using (context.DelayConventions())
                 {
-                    InternalEntityTypeBuilder.DetachRelationship(ownership).Attach(ownership.PrincipalEntityType.Builder);
+                    InternalEntityTypeBuilder.DetachRelationship(ownership).Attach(ownership.PrincipalEntityType.Builder!);
                 }
             }
         }

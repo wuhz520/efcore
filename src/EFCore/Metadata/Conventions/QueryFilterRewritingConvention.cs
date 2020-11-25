@@ -9,6 +9,8 @@ using Microsoft.EntityFrameworkCore.Metadata.Conventions.Infrastructure;
 using Microsoft.EntityFrameworkCore.Query;
 using Microsoft.EntityFrameworkCore.Utilities;
 
+#nullable enable
+
 namespace Microsoft.EntityFrameworkCore.Metadata.Conventions
 {
     /// <summary>
@@ -59,7 +61,7 @@ namespace Microsoft.EntityFrameworkCore.Metadata.Conventions
         protected class DbSetAccessRewritingExpressionVisitor : ExpressionVisitor
         {
             private readonly Type _contextType;
-            private IModel _model;
+            private IModel? _model;
 
             /// <summary>
             ///     Creates a new instance of <see cref="DbSetAccessRewritingExpressionVisitor" />.
@@ -119,7 +121,7 @@ namespace Microsoft.EntityFrameworkCore.Metadata.Conventions
             }
 
             private IEntityType FindEntityType(Type dbSetType)
-                => _model.FindRuntimeEntityType(dbSetType.GetGenericArguments()[0]);
+                => _model!.FindRuntimeEntityType(dbSetType.GetGenericArguments()[0]);
         }
     }
 }

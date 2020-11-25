@@ -9,6 +9,8 @@ using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
 using Microsoft.EntityFrameworkCore.Metadata.Conventions.Infrastructure;
 
+#nullable enable
+
 namespace Microsoft.EntityFrameworkCore.Metadata.Conventions
 {
     /// <summary>
@@ -40,7 +42,7 @@ namespace Microsoft.EntityFrameworkCore.Metadata.Conventions
         {
             foreach (var function in modelBuilder.Metadata.GetDbFunctions())
             {
-                ProcessDbFunctionAdded(function.Builder, context);
+                ProcessDbFunctionAdded(function.Builder!, context);
             }
         }
 
@@ -59,7 +61,7 @@ namespace Microsoft.EntityFrameworkCore.Metadata.Conventions
                 return;
             }
 
-            var elementType = function.ReturnType.TryGetElementType(typeof(IQueryable<>));
+            var elementType = function.ReturnType.TryGetElementType(typeof(IQueryable<>))!;
             if (!elementType.IsValidEntityType())
             {
                 throw new InvalidOperationException(
@@ -76,10 +78,10 @@ namespace Microsoft.EntityFrameworkCore.Metadata.Conventions
                 return;
             }
 
-            IConventionEntityTypeBuilder entityTypeBuilder;
+            IConventionEntityTypeBuilder? entityTypeBuilder;
             if (entityType != null)
             {
-                entityTypeBuilder = entityType.Builder;
+                entityTypeBuilder = entityType.Builder!;
             }
             else
             {

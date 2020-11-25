@@ -6,6 +6,8 @@ using JetBrains.Annotations;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
 using Microsoft.EntityFrameworkCore.Metadata.Conventions.Infrastructure;
 
+#nullable enable
+
 // ReSharper disable once CheckNamespace
 namespace Microsoft.EntityFrameworkCore.Metadata.Conventions
 {
@@ -77,7 +79,7 @@ namespace Microsoft.EntityFrameworkCore.Metadata.Conventions
                     // Needed for the annotation to show up in the model snapshot
                     if (strategy != null)
                     {
-                        property.Builder.HasValueGenerationStrategy(strategy);
+                        property.Builder!.HasValueGenerationStrategy(strategy);
                     }
                 }
             }

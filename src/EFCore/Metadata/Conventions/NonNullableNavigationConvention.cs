@@ -8,6 +8,8 @@ using Microsoft.EntityFrameworkCore.Metadata.Conventions.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata.Internal;
 using Microsoft.EntityFrameworkCore.Utilities;
 
+#nullable enable
+
 namespace Microsoft.EntityFrameworkCore.Metadata.Conventions
 {
     /// <summary>
@@ -33,7 +35,7 @@ namespace Microsoft.EntityFrameworkCore.Metadata.Conventions
             IConventionContext<IConventionNavigationBuilder> context)
         {
             ProcessNavigation(navigationBuilder);
-            context.StopProcessingIfChanged(navigationBuilder.Metadata.Builder);
+            context.StopProcessingIfChanged(navigationBuilder.Metadata.Builder!);
         }
 
         /// <inheritdoc />
@@ -44,15 +46,15 @@ namespace Microsoft.EntityFrameworkCore.Metadata.Conventions
             var fk = relationshipBuilder.Metadata;
             if (fk.DependentToPrincipal != null)
             {
-                ProcessNavigation(fk.DependentToPrincipal.Builder);
+                ProcessNavigation(fk.DependentToPrincipal.Builder!);
             }
 
             if (fk.PrincipalToDependent != null)
             {
-                ProcessNavigation(fk.PrincipalToDependent.Builder);
+                ProcessNavigation(fk.PrincipalToDependent.Builder!);
             }
 
-            context.StopProcessingIfChanged(relationshipBuilder.Metadata.Builder);
+            context.StopProcessingIfChanged(relationshipBuilder.Metadata.Builder!);
         }
 
         private void ProcessNavigation(IConventionNavigationBuilder navigationBuilder)
@@ -71,11 +73,11 @@ namespace Microsoft.EntityFrameworkCore.Metadata.Conventions
             {
                 if (navigation.IsOnDependent)
                 {
-                    foreignKey.Builder.IsRequired(true);
+                    foreignKey.Builder!.IsRequired(true);
                 }
                 else
                 {
-                    foreignKey.Builder.IsRequiredDependent(true);
+                    foreignKey.Builder!.IsRequiredDependent(true);
                 }
             }
         }

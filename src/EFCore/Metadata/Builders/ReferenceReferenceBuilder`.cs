@@ -9,6 +9,8 @@ using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata.Internal;
 using Microsoft.EntityFrameworkCore.Utilities;
 
+#nullable enable
+
 namespace Microsoft.EntityFrameworkCore.Metadata.Builders
 {
     /// <summary>
@@ -44,7 +46,7 @@ namespace Microsoft.EntityFrameworkCore.Metadata.Builders
         [EntityFrameworkInternal]
         protected ReferenceReferenceBuilder(
             [NotNull] InternalForeignKeyBuilder builder,
-            [CanBeNull] ReferenceReferenceBuilder oldBuilder,
+            [CanBeNull] ReferenceReferenceBuilder? oldBuilder,
             bool inverted = false,
             bool foreignKeySet = false,
             bool principalKeySet = false,
@@ -100,6 +102,7 @@ namespace Microsoft.EntityFrameworkCore.Metadata.Builders
                     dependentEntityTypeName,
                     Check.NotNull(foreignKeyPropertyNames, nameof(foreignKeyPropertyNames))),
                 this,
+                // TODO-NULLABLE: NRE if entity type cannot be resolved?
                 inverted: Builder.Metadata.DeclaringEntityType.Name != ResolveEntityType(dependentEntityTypeName).Name,
                 foreignKeySet: foreignKeyPropertyNames.Length > 0);
 
@@ -210,6 +213,7 @@ namespace Microsoft.EntityFrameworkCore.Metadata.Builders
             where TDependentEntity : class
             => new ReferenceReferenceBuilder<TEntity, TRelatedEntity>(
                 HasForeignKeyBuilder(
+                    // TODO-NULLABLE: NRE if entity type cannot be resolved?
                     ResolveEntityType(typeof(TDependentEntity)),
                     typeof(TDependentEntity).ShortDisplayName(),
                     Check.NotNull(foreignKeyExpression, nameof(foreignKeyExpression)).GetMemberAccessList()),
@@ -313,6 +317,7 @@ namespace Microsoft.EntityFrameworkCore.Metadata.Builders
             where TPrincipalEntity : class
             => new ReferenceReferenceBuilder<TEntity, TRelatedEntity>(
                 HasPrincipalKeyBuilder(
+                    // TODO-NULLABLE: NRE if entity type cannot be resolved?
                     ResolveEntityType(typeof(TPrincipalEntity)),
                     typeof(TPrincipalEntity).ShortDisplayName(),
                     Check.NotNull(keyExpression, nameof(keyExpression)).GetMemberAccessList()),
@@ -328,7 +333,7 @@ namespace Microsoft.EntityFrameworkCore.Metadata.Builders
         /// <returns> The same builder instance so that multiple configuration calls can be chained. </returns>
         public new virtual ReferenceReferenceBuilder<TEntity, TRelatedEntity> IsRequired(bool required = true)
             => new ReferenceReferenceBuilder<TEntity, TRelatedEntity>(
-                Builder.IsRequired(required, ConfigurationSource.Explicit),
+                Builder.IsRequired(required, ConfigurationSource.Explicit)!,
                 this,
                 requiredSet: true);
 
@@ -340,6 +345,6 @@ namespace Microsoft.EntityFrameworkCore.Metadata.Builders
         /// <returns> The same builder instance so that multiple configuration calls can be chained. </returns>
         public new virtual ReferenceReferenceBuilder<TEntity, TRelatedEntity> OnDelete(DeleteBehavior deleteBehavior)
             => new ReferenceReferenceBuilder<TEntity, TRelatedEntity>(
-                Builder.OnDelete(deleteBehavior, ConfigurationSource.Explicit), this);
+                Builder.OnDelete(deleteBehavior, ConfigurationSource.Explicit)!, this);
     }
 }

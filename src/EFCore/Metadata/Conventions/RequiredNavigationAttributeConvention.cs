@@ -9,6 +9,8 @@ using Microsoft.EntityFrameworkCore.Diagnostics;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
 using Microsoft.EntityFrameworkCore.Metadata.Conventions.Infrastructure;
 
+#nullable enable
+
 namespace Microsoft.EntityFrameworkCore.Metadata.Conventions
 {
     /// <summary>
@@ -33,30 +35,30 @@ namespace Microsoft.EntityFrameworkCore.Metadata.Conventions
             IConventionContext<IConventionNavigationBuilder> context)
         {
             ProcessNavigation(navigationBuilder);
-            context.StopProcessingIfChanged(navigationBuilder.Metadata.Builder);
+            context.StopProcessingIfChanged(navigationBuilder.Metadata.Builder!);
         }
 
         /// <inheritdoc />
         public override void ProcessForeignKeyPrincipalEndChanged(
             IConventionForeignKeyBuilder relationshipBuilder,
-            IEnumerable<RequiredAttribute> dependentToPrincipalAttributes,
-            IEnumerable<RequiredAttribute> principalToDependentAttributes,
+            IEnumerable<RequiredAttribute>? dependentToPrincipalAttributes,
+            IEnumerable<RequiredAttribute>? principalToDependentAttributes,
             IConventionContext<IConventionForeignKeyBuilder> context)
         {
             var fk = relationshipBuilder.Metadata;
             if (dependentToPrincipalAttributes != null
                 && dependentToPrincipalAttributes.Any())
             {
-                ProcessNavigation(fk.DependentToPrincipal.Builder);
+                ProcessNavigation(fk.DependentToPrincipal!.Builder!);
             }
 
             if (principalToDependentAttributes != null
                 && principalToDependentAttributes.Any())
             {
-                ProcessNavigation(fk.PrincipalToDependent.Builder);
+                ProcessNavigation(fk.PrincipalToDependent!.Builder!);
             }
 
-            context.StopProcessingIfChanged(relationshipBuilder.Metadata.Builder);
+            context.StopProcessingIfChanged(relationshipBuilder.Metadata.Builder!);
         }
 
         private void ProcessNavigation(IConventionNavigationBuilder navigationBuilder)
@@ -73,11 +75,11 @@ namespace Microsoft.EntityFrameworkCore.Metadata.Conventions
             {
                 if (navigation.IsOnDependent)
                 {
-                    foreignKey.Builder.IsRequired(true, fromDataAnnotation: true);
+                    foreignKey.Builder!.IsRequired(true, fromDataAnnotation: true);
                 }
                 else
                 {
-                    foreignKey.Builder.IsRequiredDependent(true, fromDataAnnotation: true);
+                    foreignKey.Builder!.IsRequiredDependent(true, fromDataAnnotation: true);
                 }
             }
         }

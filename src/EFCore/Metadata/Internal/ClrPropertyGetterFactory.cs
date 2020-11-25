@@ -7,6 +7,8 @@ using System.Linq.Expressions;
 using System.Reflection;
 using Microsoft.EntityFrameworkCore.Internal;
 
+#nullable enable
+
 namespace Microsoft.EntityFrameworkCore.Metadata.Internal
 {
     /// <summary>
@@ -33,8 +35,8 @@ namespace Microsoft.EntityFrameworkCore.Metadata.Internal
         ///     doing so can result in application failures when updating to a new Entity Framework Core release.
         /// </summary>
         protected override IClrPropertyGetter CreateGeneric<TEntity, TValue, TNonNullableEnumValue>(
-            MemberInfo memberInfo,
-            IPropertyBase propertyBase)
+            MemberInfo? memberInfo,
+            IPropertyBase? propertyBase)
         {
             var entityParameter = Expression.Parameter(typeof(TEntity), "entity");
 

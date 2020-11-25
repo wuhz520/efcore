@@ -10,6 +10,8 @@ using Microsoft.EntityFrameworkCore.Metadata.Conventions.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata.Internal;
 using Microsoft.EntityFrameworkCore.Utilities;
 
+#nullable enable
+
 namespace Microsoft.EntityFrameworkCore.Metadata.Conventions
 {
     /// <summary>
@@ -48,8 +50,8 @@ namespace Microsoft.EntityFrameworkCore.Metadata.Conventions
         /// <inheritdoc />
         public virtual void ProcessSkipNavigationInverseChanged(
             IConventionSkipNavigationBuilder skipNavigationBuilder,
-            IConventionSkipNavigation inverse,
-            IConventionSkipNavigation oldInverse,
+            IConventionSkipNavigation? inverse,
+            IConventionSkipNavigation? oldInverse,
             IConventionContext<IConventionSkipNavigation> context)
         {
             CreateJoinEntityType(skipNavigationBuilder);
@@ -58,8 +60,8 @@ namespace Microsoft.EntityFrameworkCore.Metadata.Conventions
         /// <inheritdoc />
         public virtual void ProcessSkipNavigationForeignKeyChanged(
             IConventionSkipNavigationBuilder skipNavigationBuilder,
-            IConventionForeignKey foreignKey,
-            IConventionForeignKey oldForeignKey,
+            IConventionForeignKey? foreignKey,
+            IConventionForeignKey? oldForeignKey,
             IConventionContext<IConventionForeignKey> context)
         {
             var joinEntityType = oldForeignKey?.DeclaringEntityType;
@@ -143,8 +145,8 @@ namespace Microsoft.EntityFrameworkCore.Metadata.Conventions
                 return;
             }
 
-            skipNavigation.Builder.HasForeignKey(leftForeignKey, ConfigurationSource.Convention);
-            inverseSkipNavigation.Builder.HasForeignKey(rightForeignKey, ConfigurationSource.Convention);
+            skipNavigation.Builder!.HasForeignKey(leftForeignKey, ConfigurationSource.Convention);
+            inverseSkipNavigation.Builder!.HasForeignKey(rightForeignKey, ConfigurationSource.Convention);
         }
 
         private static ForeignKey CreateSkipNavigationForeignKey(

@@ -14,6 +14,8 @@ using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata.Internal;
 using Microsoft.EntityFrameworkCore.Utilities;
 
+#nullable enable
+
 namespace Microsoft.EntityFrameworkCore.Metadata.Builders
 {
     /// <summary>
@@ -36,7 +38,7 @@ namespace Microsoft.EntityFrameworkCore.Metadata.Builders
         [EntityFrameworkInternal]
         public EntityTypeBuilder([NotNull] IMutableEntityType entityType)
         {
-            Builder = ((EntityType)entityType).Builder;
+            Builder = ((EntityType)entityType).Builder!;
         }
 
         private InternalEntityTypeBuilder Builder { [DebuggerStepThrough] get; }
@@ -75,7 +77,7 @@ namespace Microsoft.EntityFrameworkCore.Metadata.Builders
         /// </summary>
         /// <param name="name"> The name of the base type or <see langword="null" /> to indicate no base type. </param>
         /// <returns> The same builder instance so that multiple configuration calls can be chained. </returns>
-        public virtual EntityTypeBuilder HasBaseType([CanBeNull] string name)
+        public virtual EntityTypeBuilder HasBaseType([CanBeNull] string? name)
             => new EntityTypeBuilder(Builder.HasBaseType(name, ConfigurationSource.Explicit).Metadata);
 
         /// <summary>
@@ -83,7 +85,7 @@ namespace Microsoft.EntityFrameworkCore.Metadata.Builders
         /// </summary>
         /// <param name="entityType"> The base type or <see langword="null" /> to indicate no base type. </param>
         /// <returns> The same builder instance so that multiple configuration calls can be chained. </returns>
-        public virtual EntityTypeBuilder HasBaseType([CanBeNull] Type entityType)
+        public virtual EntityTypeBuilder HasBaseType([CanBeNull] Type? entityType)
             => new EntityTypeBuilder(Builder.HasBaseType(entityType, ConfigurationSource.Explicit).Metadata);
 
         /// <summary>
@@ -252,7 +254,7 @@ namespace Microsoft.EntityFrameworkCore.Metadata.Builders
         /// </summary>
         /// <param name="filter"> The LINQ predicate expression. </param>
         /// <returns> The same builder instance so that multiple configuration calls can be chained. </returns>
-        public virtual EntityTypeBuilder HasQueryFilter([CanBeNull] LambdaExpression filter)
+        public virtual EntityTypeBuilder HasQueryFilter([CanBeNull] LambdaExpression? filter)
         {
             Builder.HasQueryFilter(filter, ConfigurationSource.Explicit);
 
@@ -741,7 +743,7 @@ namespace Microsoft.EntityFrameworkCore.Metadata.Builders
         /// <returns> An object that can be used to configure the relationship. </returns>
         public virtual ReferenceNavigationBuilder HasOne(
             [NotNull] string relatedTypeName,
-            [CanBeNull] string navigationName)
+            [CanBeNull] string? navigationName)
         {
             Check.NotEmpty(relatedTypeName, nameof(relatedTypeName));
             Check.NullButNotEmpty(navigationName, nameof(navigationName));
@@ -784,7 +786,7 @@ namespace Microsoft.EntityFrameworkCore.Metadata.Builders
         /// <returns> An object that can be used to configure the relationship. </returns>
         public virtual ReferenceNavigationBuilder HasOne(
             [NotNull] Type relatedType,
-            [CanBeNull] string navigationName = null)
+            [CanBeNull] string? navigationName = null)
         {
             Check.NotNull(relatedType, nameof(relatedType));
             Check.NullButNotEmpty(navigationName, nameof(navigationName));
@@ -876,7 +878,7 @@ namespace Microsoft.EntityFrameworkCore.Metadata.Builders
         /// <returns> An object that can be used to configure the relationship. </returns>
         public virtual CollectionNavigationBuilder HasMany(
             [NotNull] string relatedTypeName,
-            [CanBeNull] string navigationName)
+            [CanBeNull] string? navigationName)
         {
             Check.NotEmpty(relatedTypeName, nameof(relatedTypeName));
             Check.NullButNotEmpty(navigationName, nameof(navigationName));
@@ -909,7 +911,7 @@ namespace Microsoft.EntityFrameworkCore.Metadata.Builders
 
             if (Metadata.ClrType == null)
             {
-                return HasMany(navigationName, (string)null);
+                return HasMany(navigationName, (string?)null);
             }
 
             var memberType = Metadata.GetNavigationMemberInfo(navigationName).GetMemberType();
@@ -954,7 +956,7 @@ namespace Microsoft.EntityFrameworkCore.Metadata.Builders
         /// <returns> An object that can be used to configure the relationship. </returns>
         public virtual CollectionNavigationBuilder HasMany(
             [NotNull] Type relatedType,
-            [CanBeNull] string navigationName = null)
+            [CanBeNull] string? navigationName = null)
         {
             Check.NotNull(relatedType, nameof(relatedType));
             Check.NullButNotEmpty(navigationName, nameof(navigationName));
@@ -965,7 +967,7 @@ namespace Microsoft.EntityFrameworkCore.Metadata.Builders
         }
 
         private CollectionNavigationBuilder HasMany(
-            string navigationName,
+            string? navigationName,
             EntityType relatedEntityType)
         {
             // Note: delay setting ConfigurationSource of skip navigation (if it exists).
@@ -974,7 +976,7 @@ namespace Microsoft.EntityFrameworkCore.Metadata.Builders
             // we want to be able to override it later.
             var skipNavigation = navigationName != null ? Builder.Metadata.FindSkipNavigation(navigationName) : null;
 
-            InternalForeignKeyBuilder relationship = null;
+            InternalForeignKeyBuilder? relationship = null;
             if (skipNavigation == null)
             {
                 relationship = Builder
@@ -997,7 +999,7 @@ namespace Microsoft.EntityFrameworkCore.Metadata.Builders
         ///     doing so can result in application failures when updating to a new Entity Framework Core release.
         /// </summary>
         [EntityFrameworkInternal]
-        protected virtual EntityType FindRelatedEntityType([NotNull] string relatedTypeName, [CanBeNull] string navigationName)
+        protected virtual EntityType FindRelatedEntityType([NotNull] string relatedTypeName, [CanBeNull] string? navigationName)
             => (navigationName == null
                     ? null
                     : Builder.ModelBuilder.Metadata.FindEntityType(relatedTypeName, navigationName, Builder.Metadata))
@@ -1010,7 +1012,7 @@ namespace Microsoft.EntityFrameworkCore.Metadata.Builders
         ///     doing so can result in application failures when updating to a new Entity Framework Core release.
         /// </summary>
         [EntityFrameworkInternal]
-        protected virtual EntityType FindRelatedEntityType([NotNull] Type relatedType, [CanBeNull] string navigationName)
+        protected virtual EntityType FindRelatedEntityType([NotNull] Type relatedType, [CanBeNull] string? navigationName)
             => (navigationName == null
                     ? null
                     : Builder.ModelBuilder.Metadata.FindEntityType(relatedType, navigationName, Builder.Metadata))
@@ -1133,7 +1135,7 @@ namespace Microsoft.EntityFrameworkCore.Metadata.Builders
         /// </summary>
         /// <returns> A string that represents the current object. </returns>
         [EditorBrowsable(EditorBrowsableState.Never)]
-        public override string ToString()
+        public override string? ToString()
             => base.ToString();
 
         /// <summary>
@@ -1143,7 +1145,7 @@ namespace Microsoft.EntityFrameworkCore.Metadata.Builders
         /// <returns> <see langword="true" /> if the specified object is equal to the current object; otherwise, <see langword="false" />. </returns>
         [EditorBrowsable(EditorBrowsableState.Never)]
         // ReSharper disable once BaseObjectEqualsIsObjectEquals
-        public override bool Equals(object obj)
+        public override bool Equals(object? obj)
             => base.Equals(obj);
 
         /// <summary>

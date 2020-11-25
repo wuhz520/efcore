@@ -10,6 +10,8 @@ using Microsoft.EntityFrameworkCore.Diagnostics;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata.Internal;
 
+#nullable enable
+
 namespace Microsoft.EntityFrameworkCore.Metadata.Builders
 {
     /// <summary>
@@ -17,8 +19,8 @@ namespace Microsoft.EntityFrameworkCore.Metadata.Builders
     /// </summary>
     public abstract class InvertibleRelationshipBuilderBase : IInfrastructure<IConventionForeignKeyBuilder>
     {
-        private readonly IReadOnlyList<Property> _foreignKeyProperties;
-        private readonly IReadOnlyList<Property> _principalKeyProperties;
+        private readonly IReadOnlyList<Property>? _foreignKeyProperties;
+        private readonly IReadOnlyList<Property>? _principalKeyProperties;
         private readonly bool? _required;
 
         /// <summary>
@@ -32,7 +34,7 @@ namespace Microsoft.EntityFrameworkCore.Metadata.Builders
             [NotNull] IMutableEntityType declaringEntityType,
             [NotNull] IMutableEntityType relatedEntityType,
             [NotNull] IMutableForeignKey foreignKey)
-            : this(((ForeignKey)foreignKey).Builder, null)
+            : this(((ForeignKey)foreignKey).Builder!, null)
         {
             DeclaringEntityType = declaringEntityType;
             RelatedEntityType = relatedEntityType;
@@ -47,7 +49,7 @@ namespace Microsoft.EntityFrameworkCore.Metadata.Builders
         [EntityFrameworkInternal]
         protected InvertibleRelationshipBuilderBase(
             [NotNull] InternalForeignKeyBuilder builder,
-            [CanBeNull] InvertibleRelationshipBuilderBase oldBuilder,
+            [CanBeNull] InvertibleRelationshipBuilderBase? oldBuilder,
             bool inverted = false,
             bool foreignKeySet = false,
             bool principalKeySet = false,
@@ -131,7 +133,7 @@ namespace Microsoft.EntityFrameworkCore.Metadata.Builders
         /// </summary>
         /// <returns> A string that represents the current object. </returns>
         [EditorBrowsable(EditorBrowsableState.Never)]
-        public override string ToString()
+        public override string? ToString()
             => base.ToString();
 
         /// <summary>
@@ -140,7 +142,7 @@ namespace Microsoft.EntityFrameworkCore.Metadata.Builders
         /// <param name="obj"> The object to compare with the current object. </param>
         /// <returns> <see langword="true" /> if the specified object is equal to the current object; otherwise, <see langword="false" />. </returns>
         [EditorBrowsable(EditorBrowsableState.Never)]
-        public override bool Equals(object obj)
+        public override bool Equals(object? obj)
             => base.Equals(obj);
 
         /// <summary>

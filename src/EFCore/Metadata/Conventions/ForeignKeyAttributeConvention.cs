@@ -13,6 +13,8 @@ using Microsoft.EntityFrameworkCore.Metadata.Conventions.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata.Internal;
 using Microsoft.EntityFrameworkCore.Utilities;
 
+#nullable enable
+
 namespace Microsoft.EntityFrameworkCore.Metadata.Conventions
 {
     /// <summary>
@@ -71,17 +73,17 @@ namespace Microsoft.EntityFrameworkCore.Metadata.Conventions
 
             var onDependent = navigationBuilder.Metadata.IsOnDependent;
             var newRelationshipBuilder =
-                UpdateRelationshipBuilder(navigationBuilder.Metadata.ForeignKey.Builder, context);
+                UpdateRelationshipBuilder(navigationBuilder.Metadata.ForeignKey.Builder!, context);
             if (newRelationshipBuilder != null)
             {
                 var newNavigationBuilder = onDependent
-                    ? newRelationshipBuilder.Metadata.DependentToPrincipal.Builder
-                    : newRelationshipBuilder.Metadata.PrincipalToDependent.Builder;
+                    ? newRelationshipBuilder.Metadata.DependentToPrincipal.Builder!
+                    : newRelationshipBuilder.Metadata.PrincipalToDependent.Builder!;
                 context.StopProcessingIfChanged(newNavigationBuilder);
             }
         }
 
-        private IConventionForeignKeyBuilder UpdateRelationshipBuilder(
+        private IConventionForeignKeyBuilder? UpdateRelationshipBuilder(
             IConventionForeignKeyBuilder relationshipBuilder,
             IConventionContext context)
         {
@@ -260,7 +262,7 @@ namespace Microsoft.EntityFrameworkCore.Metadata.Conventions
             return newRelationshipBuilder?.HasForeignKey(fkPropertiesToSet, fromDataAnnotation: true);
         }
 
-        private static IConventionForeignKeyBuilder SplitNavigationsToSeparateRelationships(
+        private static IConventionForeignKeyBuilder? SplitNavigationsToSeparateRelationships(
             IConventionForeignKeyBuilder relationshipBuilder)
         {
             var foreignKey = relationshipBuilder.Metadata;
@@ -279,13 +281,9 @@ namespace Microsoft.EntityFrameworkCore.Metadata.Conventions
                         foreignKey.PrincipalEntityType.DisplayName()));
             }
 
-            relationshipBuilder = relationshipBuilder.HasNavigation(
-                (string)null,
-                pointsToPrincipal: false,
-                fromDataAnnotation: true);
-            return relationshipBuilder == null
+            return relationshipBuilder.HasNavigation((string?)null, pointsToPrincipal: false, fromDataAnnotation: true) is null
                 ? null
-                : foreignKey.PrincipalEntityType.Builder.HasRelationship(
+                : foreignKey.PrincipalEntityType.Builder!.HasRelationship(
                     foreignKey.DeclaringEntityType,
                     principalToDependentNavigationName,
                     null,
@@ -295,20 +293,20 @@ namespace Microsoft.EntityFrameworkCore.Metadata.Conventions
                     : relationshipBuilder;
         }
 
-        private static ForeignKeyAttribute GetForeignKeyAttribute(IConventionTypeBase entityType, string propertyName)
+        private static ForeignKeyAttribute? GetForeignKeyAttribute(IConventionTypeBase entityType, string propertyName)
             => entityType.GetRuntimeProperties()?.Values
                 .FirstOrDefault(
                     p => string.Equals(p.GetSimpleMemberName(), propertyName, StringComparison.OrdinalIgnoreCase)
                         && Attribute.IsDefined(p, typeof(ForeignKeyAttribute), inherit: true))
                 ?.GetCustomAttribute<ForeignKeyAttribute>(inherit: true);
 
-        private static ForeignKeyAttribute GetForeignKeyAttribute(IConventionNavigationBase navigation)
+        private static ForeignKeyAttribute? GetForeignKeyAttribute(IConventionNavigationBase navigation)
             => GetAttribute<ForeignKeyAttribute>(navigation.GetIdentifyingMemberInfo());
 
-        private static InversePropertyAttribute GetInversePropertyAttribute(IConventionNavigation navigation)
+        private static InversePropertyAttribute? GetInversePropertyAttribute(IConventionNavigation navigation)
             => GetAttribute<InversePropertyAttribute>(navigation.GetIdentifyingMemberInfo());
 
-        private static TAttribute GetAttribute<TAttribute>(MemberInfo memberInfo)
+        private static TAttribute? GetAttribute<TAttribute>(MemberInfo? memberInfo)
             where TAttribute : Attribute
         {
             if (memberInfo == null
@@ -321,7 +319,7 @@ namespace Microsoft.EntityFrameworkCore.Metadata.Conventions
         }
 
         [ContractAnnotation("navigationName:null => null")]
-        private MemberInfo FindForeignKeyAttributeOnProperty(IConventionEntityType entityType, string navigationName)
+        private MemberInfo? FindForeignKeyAttributeOnProperty(IConventionEntityType entityType, string? navigationName)
         {
             if (string.IsNullOrWhiteSpace(navigationName)
                 || !entityType.HasClrType)
@@ -329,18 +327,18 @@ namespace Microsoft.EntityFrameworkCore.Metadata.Conventions
                 return null;
             }
 
-            MemberInfo candidateProperty = null;
+            MemberInfo? candidateProperty = null;
 
             foreach (var memberInfo in entityType.GetRuntimeProperties().Values.Cast<MemberInfo>()
                 .Concat(entityType.GetRuntimeFields().Values))
             {
-                if (entityType.Builder.IsIgnored(memberInfo.GetSimpleMemberName())
+                if (entityType.Builder!.IsIgnored(memberInfo.GetSimpleMemberName())
                     || !Attribute.IsDefined(memberInfo, typeof(ForeignKeyAttribute), inherit: true))
                 {
                     continue;
                 }
 
-                var attribute = memberInfo.GetCustomAttribute<ForeignKeyAttribute>(inherit: true);
+                var attribute = memberInfo.GetCustomAttribute<ForeignKeyAttribute>(inherit: true)!;
 
                 if (attribute.Name != navigationName
                     || (memberInfo is PropertyInfo propertyInfo
@@ -382,13 +380,13 @@ namespace Microsoft.EntityFrameworkCore.Metadata.Conventions
                 || (propertyInfo.PropertyType.TryGetSequenceType() is Type elementType
                     && model.IsShared(elementType));
 
-        private static IReadOnlyList<string> FindCandidateDependentPropertiesThroughNavigation(
+        private static IReadOnlyList<string>? FindCandidateDependentPropertiesThroughNavigation(
             IConventionForeignKeyBuilder relationshipBuilder,
             bool pointsToPrincipal)
         {
             var navigation = pointsToPrincipal
                 ? relationshipBuilder.Metadata.DependentToPrincipal
-                : relationshipBuilder.Metadata.PrincipalToDependent;
+                : relationshipBuilder.Metadata.PrincipalToDependent!;
 
             var navigationFkAttribute = navigation != null
                 ? GetForeignKeyAttribute(navigation)
@@ -401,11 +399,11 @@ namespace Microsoft.EntityFrameworkCore.Metadata.Conventions
                 if (properties.Any(string.IsNullOrWhiteSpace))
                 {
                     throw new InvalidOperationException(
-                        CoreStrings.InvalidPropertyListOnNavigation(navigation.Name, navigation.DeclaringEntityType.DisplayName()));
+                        CoreStrings.InvalidPropertyListOnNavigation(navigation!.Name, navigation.DeclaringEntityType.DisplayName()));
                 }
 
                 var navigationPropertyTargetType =
-                    navigation.DeclaringEntityType.GetRuntimeProperties()[navigation.Name].PropertyType;
+                    navigation!.DeclaringEntityType.GetRuntimeProperties()[navigation.Name].PropertyType;
 
                 var otherNavigations = navigation.DeclaringEntityType.GetRuntimeProperties().Values
                     .Where(p => p.PropertyType == navigationPropertyTargetType && p.GetSimpleMemberName() != navigation.Name)

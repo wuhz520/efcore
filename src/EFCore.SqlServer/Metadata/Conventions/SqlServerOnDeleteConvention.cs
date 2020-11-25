@@ -6,6 +6,8 @@ using JetBrains.Annotations;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
 using Microsoft.EntityFrameworkCore.Metadata.Conventions.Infrastructure;
 
+#nullable enable
+
 // ReSharper disable once CheckNamespace
 namespace Microsoft.EntityFrameworkCore.Metadata.Conventions
 {
@@ -30,8 +32,8 @@ namespace Microsoft.EntityFrameworkCore.Metadata.Conventions
         /// <inheritdoc />
         public virtual void ProcessSkipNavigationForeignKeyChanged(
             IConventionSkipNavigationBuilder skipNavigationBuilder,
-            IConventionForeignKey foreignKey,
-            IConventionForeignKey oldForeignKey,
+            IConventionForeignKey? foreignKey,
+            IConventionForeignKey? oldForeignKey,
             IConventionContext<IConventionForeignKey> context)
         {
             foreignKey?.Builder?.OnDelete(GetTargetDeleteBehavior(foreignKey));

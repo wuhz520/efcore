@@ -10,6 +10,8 @@ using Microsoft.EntityFrameworkCore.Metadata.Builders;
 using Microsoft.EntityFrameworkCore.Metadata.Conventions.Infrastructure;
 using Microsoft.EntityFrameworkCore.Utilities;
 
+#nullable enable
+
 namespace Microsoft.EntityFrameworkCore.Metadata.Conventions
 {
     /// <summary>
@@ -69,7 +71,7 @@ namespace Microsoft.EntityFrameworkCore.Metadata.Conventions
                 return;
             }
 
-            List<IConventionProperty> keyProperties = null;
+            List<IConventionProperty>? keyProperties = null;
             var definingFk = entityType.FindDefiningNavigation()?.ForeignKey
                 ?? entityType.FindOwnership();
             if (definingFk != null
@@ -185,8 +187,8 @@ namespace Microsoft.EntityFrameworkCore.Metadata.Conventions
         /// <inheritdoc />
         public virtual void ProcessEntityTypeBaseTypeChanged(
             IConventionEntityTypeBuilder entityTypeBuilder,
-            IConventionEntityType newBaseType,
-            IConventionEntityType oldBaseType,
+            IConventionEntityType? newBaseType,
+            IConventionEntityType? oldBaseType,
             IConventionContext<IConventionEntityType> context)
         {
             if (entityTypeBuilder.Metadata.BaseType != newBaseType)
@@ -202,7 +204,7 @@ namespace Microsoft.EntityFrameworkCore.Metadata.Conventions
             IConventionPropertyBuilder propertyBuilder,
             IConventionContext<IConventionPropertyBuilder> context)
         {
-            TryConfigurePrimaryKey(propertyBuilder.Metadata.DeclaringEntityType.Builder);
+            TryConfigurePrimaryKey(propertyBuilder.Metadata.DeclaringEntityType.Builder!);
         }
 
         /// <inheritdoc />
@@ -224,7 +226,7 @@ namespace Microsoft.EntityFrameworkCore.Metadata.Conventions
         {
             if (relationshipBuilder.Metadata.IsOwnership)
             {
-                TryConfigurePrimaryKey(relationshipBuilder.Metadata.DeclaringEntityType.Builder);
+                TryConfigurePrimaryKey(relationshipBuilder.Metadata.DeclaringEntityType.Builder!);
             }
         }
 
@@ -240,7 +242,7 @@ namespace Microsoft.EntityFrameworkCore.Metadata.Conventions
                 && !foreignKey.Properties.SequenceEqual(oldDependentProperties)
                 && relationshipBuilder.Metadata.Builder != null)
             {
-                TryConfigurePrimaryKey(foreignKey.DeclaringEntityType.Builder);
+                TryConfigurePrimaryKey(foreignKey.DeclaringEntityType.Builder!);
             }
         }
 
@@ -249,7 +251,7 @@ namespace Microsoft.EntityFrameworkCore.Metadata.Conventions
             IConventionForeignKeyBuilder relationshipBuilder,
             IConventionContext<bool?> context)
         {
-            TryConfigurePrimaryKey(relationshipBuilder.Metadata.DeclaringEntityType.Builder);
+            TryConfigurePrimaryKey(relationshipBuilder.Metadata.DeclaringEntityType.Builder!);
         }
 
         /// <inheritdoc />
@@ -271,15 +273,15 @@ namespace Microsoft.EntityFrameworkCore.Metadata.Conventions
         {
             if (relationshipBuilder.Metadata.IsOwnership)
             {
-                TryConfigurePrimaryKey(relationshipBuilder.Metadata.DeclaringEntityType.Builder);
+                TryConfigurePrimaryKey(relationshipBuilder.Metadata.DeclaringEntityType.Builder!);
             }
         }
 
         /// <inheritdoc />
         public virtual void ProcessSkipNavigationForeignKeyChanged(
             IConventionSkipNavigationBuilder skipNavigationBuilder,
-            IConventionForeignKey foreignKey,
-            IConventionForeignKey oldForeignKey,
+            IConventionForeignKey? foreignKey,
+            IConventionForeignKey? oldForeignKey,
             IConventionContext<IConventionForeignKey> context)
         {
             var joinEntityTypeBuilder = skipNavigationBuilder.Metadata.ForeignKey?.DeclaringEntityType.Builder;

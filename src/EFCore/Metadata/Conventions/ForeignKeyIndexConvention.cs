@@ -10,6 +10,8 @@ using Microsoft.EntityFrameworkCore.Metadata.Builders;
 using Microsoft.EntityFrameworkCore.Metadata.Conventions.Infrastructure;
 using Microsoft.EntityFrameworkCore.Utilities;
 
+#nullable enable
+
 namespace Microsoft.EntityFrameworkCore.Metadata.Conventions
 {
     /// <summary>
@@ -52,7 +54,7 @@ namespace Microsoft.EntityFrameworkCore.Metadata.Conventions
             IConventionContext<IConventionForeignKeyBuilder> context)
         {
             var foreignKey = relationshipBuilder.Metadata;
-            CreateIndex(foreignKey.Properties, foreignKey.IsUnique, foreignKey.DeclaringEntityType.Builder);
+            CreateIndex(foreignKey.Properties, foreignKey.IsUnique, foreignKey.DeclaringEntityType.Builder!);
         }
 
         /// <summary>
@@ -88,7 +90,7 @@ namespace Microsoft.EntityFrameworkCore.Metadata.Conventions
                 OnForeignKeyRemoved(foreignKey.DeclaringEntityType, oldDependentProperties);
                 if (relationshipBuilder.Metadata.Builder != null)
                 {
-                    CreateIndex(foreignKey.Properties, foreignKey.IsUnique, foreignKey.DeclaringEntityType.Builder);
+                    CreateIndex(foreignKey.Properties, foreignKey.IsUnique, foreignKey.DeclaringEntityType.Builder!);
                 }
             }
         }
@@ -109,13 +111,13 @@ namespace Microsoft.EntityFrameworkCore.Metadata.Conventions
                 if (index.IsUnique
                     && otherForeignKeys.All(fk => !fk.IsUnique))
                 {
-                    index.Builder.IsUnique(false);
+                    index.Builder!.IsUnique(false);
                 }
 
                 return;
             }
 
-            index.DeclaringEntityType.Builder.HasNoIndex(index);
+            index.DeclaringEntityType.Builder!.HasNoIndex(index);
         }
 
         /// <summary>
@@ -149,7 +151,7 @@ namespace Microsoft.EntityFrameworkCore.Metadata.Conventions
                 .SelectMany(t => t.GetDeclaredForeignKeys())
                 .Where(fk => AreIndexedBy(fk.Properties, fk.IsUnique, key.Properties, coveringIndexUnique: true)))
             {
-                CreateIndex(otherForeignKey.Properties, otherForeignKey.IsUnique, otherForeignKey.DeclaringEntityType.Builder);
+                CreateIndex(otherForeignKey.Properties, otherForeignKey.IsUnique, otherForeignKey.DeclaringEntityType.Builder!);
             }
         }
 
@@ -162,8 +164,8 @@ namespace Microsoft.EntityFrameworkCore.Metadata.Conventions
         /// <param name="context"> Additional information associated with convention execution. </param>
         public virtual void ProcessEntityTypeBaseTypeChanged(
             IConventionEntityTypeBuilder entityTypeBuilder,
-            IConventionEntityType newBaseType,
-            IConventionEntityType oldBaseType,
+            IConventionEntityType? newBaseType,
+            IConventionEntityType? oldBaseType,
             IConventionContext<IConventionEntityType> context)
         {
             if (entityTypeBuilder.Metadata.BaseType != newBaseType)
@@ -179,11 +181,11 @@ namespace Microsoft.EntityFrameworkCore.Metadata.Conventions
                 var index = foreignKey.DeclaringEntityType.FindIndex(foreignKey.Properties);
                 if (index == null)
                 {
-                    CreateIndex(foreignKey.Properties, foreignKey.IsUnique, foreignKey.DeclaringEntityType.Builder);
+                    CreateIndex(foreignKey.Properties, foreignKey.IsUnique, foreignKey.DeclaringEntityType.Builder!);
                 }
                 else if (newBaseType != null)
                 {
-                    var coveringKey = baseKeys.FirstOrDefault(
+                    var coveringKey = baseKeys!.FirstOrDefault(
                         k => AreIndexedBy(foreignKey.Properties, foreignKey.IsUnique, k.Properties, coveringIndexUnique: true));
                     if (coveringKey != null)
                     {
@@ -191,7 +193,7 @@ namespace Microsoft.EntityFrameworkCore.Metadata.Conventions
                     }
                     else
                     {
-                        var coveringIndex = baseIndexes.FirstOrDefault(
+                        var coveringIndex = baseIndexes!.FirstOrDefault(
                             i => AreIndexedBy(foreignKey.Properties, foreignKey.IsUnique, i.Properties, i.IsUnique));
                         if (coveringIndex != null)
                         {
@@ -233,7 +235,7 @@ namespace Microsoft.EntityFrameworkCore.Metadata.Conventions
                 .SelectMany(t => t.GetDeclaredForeignKeys())
                 .Where(fk => AreIndexedBy(fk.Properties, fk.IsUnique, index.Properties, index.IsUnique)))
             {
-                CreateIndex(foreignKey.Properties, foreignKey.IsUnique, foreignKey.DeclaringEntityType.Builder);
+                CreateIndex(foreignKey.Properties, foreignKey.IsUnique, foreignKey.DeclaringEntityType.Builder!);
             }
         }
 
@@ -252,7 +254,7 @@ namespace Microsoft.EntityFrameworkCore.Metadata.Conventions
             {
                 if (foreignKey.IsUnique)
                 {
-                    CreateIndex(foreignKey.Properties, foreignKey.IsUnique, foreignKey.DeclaringEntityType.Builder);
+                    CreateIndex(foreignKey.Properties, foreignKey.IsUnique, foreignKey.DeclaringEntityType.Builder!);
                 }
             }
             else
@@ -276,7 +278,7 @@ namespace Microsoft.EntityFrameworkCore.Metadata.Conventions
                     }
                 }
 
-                index.Builder.IsUnique(foreignKey.IsUnique);
+                index.Builder!.IsUnique(foreignKey.IsUnique);
             }
         }
 
@@ -306,7 +308,7 @@ namespace Microsoft.EntityFrameworkCore.Metadata.Conventions
                     .SelectMany(t => t.GetDeclaredForeignKeys())
                     .Where(fk => fk.IsUnique && AreIndexedBy(fk.Properties, fk.IsUnique, index.Properties, coveringIndexUnique: true)))
                 {
-                    CreateIndex(foreignKey.Properties, foreignKey.IsUnique, foreignKey.DeclaringEntityType.Builder);
+                    CreateIndex(foreignKey.Properties, foreignKey.IsUnique, foreignKey.DeclaringEntityType.Builder!);
                 }
             }
         }
@@ -318,7 +320,7 @@ namespace Microsoft.EntityFrameworkCore.Metadata.Conventions
         /// <param name="unique"> Whether the index to create should be unique. </param>
         /// <param name="entityTypeBuilder"> The builder for the entity type. </param>
         /// <returns> The created index. </returns>
-        protected virtual IConventionIndex CreateIndex(
+        protected virtual IConventionIndex? CreateIndex(
             [NotNull] IReadOnlyList<IConventionProperty> properties,
             bool unique,
             [NotNull] IConventionEntityTypeBuilder entityTypeBuilder)
@@ -365,7 +367,7 @@ namespace Microsoft.EntityFrameworkCore.Metadata.Conventions
                 || (unique && coveringIndexUnique && coveringIndexProperties.SequenceEqual(properties));
 
         private static void RemoveIndex(IConventionIndex index)
-            => index.DeclaringEntityType.Builder.HasNoIndex(index);
+            => index.DeclaringEntityType.Builder!.HasNoIndex(index);
 
         /// <inheritdoc />
         public virtual void ProcessModelFinalizing(

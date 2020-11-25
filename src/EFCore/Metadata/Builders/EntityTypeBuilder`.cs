@@ -11,6 +11,8 @@ using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata.Internal;
 using Microsoft.EntityFrameworkCore.Utilities;
 
+#nullable enable
+
 namespace Microsoft.EntityFrameworkCore.Metadata.Builders
 {
     /// <summary>
@@ -53,7 +55,7 @@ namespace Microsoft.EntityFrameworkCore.Metadata.Builders
         /// </summary>
         /// <param name="name"> The name of the base type or <see langword="null" /> to indicate no base type. </param>
         /// <returns> The same builder instance so that multiple configuration calls can be chained. </returns>
-        public new virtual EntityTypeBuilder<TEntity> HasBaseType([CanBeNull] string name)
+        public new virtual EntityTypeBuilder<TEntity> HasBaseType([CanBeNull] string? name)
             => new EntityTypeBuilder<TEntity>(Builder.HasBaseType(name, ConfigurationSource.Explicit).Metadata);
 
         /// <summary>
@@ -61,7 +63,7 @@ namespace Microsoft.EntityFrameworkCore.Metadata.Builders
         /// </summary>
         /// <param name="entityType"> The base type or <see langword="null" /> to indicate no base type. </param>
         /// <returns> The same builder instance so that multiple configuration calls can be chained. </returns>
-        public new virtual EntityTypeBuilder<TEntity> HasBaseType([CanBeNull] Type entityType)
+        public new virtual EntityTypeBuilder<TEntity> HasBaseType([CanBeNull] Type? entityType)
             => new EntityTypeBuilder<TEntity>(Builder.HasBaseType(entityType, ConfigurationSource.Explicit).Metadata);
 
         /// <summary>
@@ -218,7 +220,7 @@ namespace Microsoft.EntityFrameworkCore.Metadata.Builders
         /// </summary>
         /// <param name="filter"> The LINQ predicate expression. </param>
         /// <returns> The same builder instance so that multiple configuration calls can be chained. </returns>
-        public new virtual EntityTypeBuilder<TEntity> HasQueryFilter([CanBeNull] LambdaExpression filter)
+        public new virtual EntityTypeBuilder<TEntity> HasQueryFilter([CanBeNull] LambdaExpression? filter)
             => (EntityTypeBuilder<TEntity>)base.HasQueryFilter(filter);
 
         /// <summary>
@@ -227,7 +229,7 @@ namespace Microsoft.EntityFrameworkCore.Metadata.Builders
         /// </summary>
         /// <param name="filter"> The LINQ predicate expression. </param>
         /// <returns> The same builder instance so that multiple configuration calls can be chained. </returns>
-        public virtual EntityTypeBuilder<TEntity> HasQueryFilter([CanBeNull] Expression<Func<TEntity, bool>> filter)
+        public virtual EntityTypeBuilder<TEntity> HasQueryFilter([CanBeNull] Expression<Func<TEntity, bool>>? filter)
             => (EntityTypeBuilder<TEntity>)base.HasQueryFilter(filter);
 
         /// <summary>

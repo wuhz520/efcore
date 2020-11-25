@@ -10,6 +10,8 @@ using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata.Internal;
 using Microsoft.EntityFrameworkCore.Utilities;
 
+#nullable enable
+
 namespace Microsoft.EntityFrameworkCore.Metadata.Builders
 {
     /// <summary>
@@ -30,7 +32,7 @@ namespace Microsoft.EntityFrameworkCore.Metadata.Builders
         {
             PrincipalEntityType = (EntityType)ownership.PrincipalEntityType;
             DependentEntityType = (EntityType)ownership.DeclaringEntityType;
-            _builder = ((ForeignKey)ownership).Builder;
+            _builder = ((ForeignKey)ownership).Builder!;
         }
 
         /// <summary>
@@ -291,7 +293,7 @@ namespace Microsoft.EntityFrameworkCore.Metadata.Builders
         /// </param>
         /// <returns> An object that can be used to configure the relationship. </returns>
         public virtual OwnershipBuilder WithOwner(
-            [CanBeNull] string ownerReference = null)
+            [CanBeNull] string? ownerReference = null)
         {
             Check.NullButNotEmpty(ownerReference, nameof(ownerReference));
 
@@ -301,7 +303,7 @@ namespace Microsoft.EntityFrameworkCore.Metadata.Builders
                 Builder.HasNavigation(
                     ownerReference,
                     pointsToPrincipal: true,
-                    ConfigurationSource.Explicit).Metadata);
+                    ConfigurationSource.Explicit)!.Metadata);
         }
 
         /// <summary>
@@ -525,7 +527,7 @@ namespace Microsoft.EntityFrameworkCore.Metadata.Builders
             using (DependentEntityType.Model.ConventionDispatcher.DelayConventions())
             {
                 var navigationMember = MemberIdentity.Create(navigationName);
-                relationship = DependentEntityType.Builder.HasOwnership(ownedType, navigationMember, ConfigurationSource.Explicit);
+                relationship = DependentEntityType.Builder.HasOwnership(ownedType, navigationMember, ConfigurationSource.Explicit)!;
                 relationship.IsUnique(true, ConfigurationSource.Explicit);
             }
 
@@ -747,7 +749,7 @@ namespace Microsoft.EntityFrameworkCore.Metadata.Builders
             using (DependentEntityType.Model.ConventionDispatcher.DelayConventions())
             {
                 var navigationMember = MemberIdentity.Create(navigationName);
-                relationship = DependentEntityType.Builder.HasOwnership(ownedType, navigationMember, ConfigurationSource.Explicit);
+                relationship = DependentEntityType.Builder.HasOwnership(ownedType, navigationMember, ConfigurationSource.Explicit)!;
                 relationship.IsUnique(false, ConfigurationSource.Explicit);
             }
 
@@ -781,7 +783,7 @@ namespace Microsoft.EntityFrameworkCore.Metadata.Builders
         /// <returns> An object that can be used to configure the relationship. </returns>
         public virtual ReferenceNavigationBuilder HasOne(
             [NotNull] string relatedTypeName,
-            [CanBeNull] string navigationName)
+            [CanBeNull] string? navigationName)
         {
             Check.NotEmpty(relatedTypeName, nameof(relatedTypeName));
             Check.NullButNotEmpty(navigationName, nameof(navigationName));
@@ -856,7 +858,7 @@ namespace Microsoft.EntityFrameworkCore.Metadata.Builders
         /// <returns> An object that can be used to configure the relationship. </returns>
         public virtual ReferenceNavigationBuilder HasOne(
             [NotNull] Type relatedType,
-            [CanBeNull] string navigationName = null)
+            [CanBeNull] string? navigationName = null)
         {
             Check.NotNull(relatedType, nameof(relatedType));
             Check.NullButNotEmpty(navigationName, nameof(navigationName));
@@ -879,7 +881,7 @@ namespace Microsoft.EntityFrameworkCore.Metadata.Builders
         ///     doing so can result in application failures when updating to a new Entity Framework Core release.
         /// </summary>
         [EntityFrameworkInternal]
-        protected virtual EntityType FindRelatedEntityType([NotNull] string relatedTypeName, [CanBeNull] string navigationName)
+        protected virtual EntityType FindRelatedEntityType([NotNull] string relatedTypeName, [CanBeNull] string? navigationName)
         {
             var relatedEntityType = DependentEntityType.FindInDefinitionPath(relatedTypeName);
             if (relatedEntityType != null)
@@ -903,7 +905,7 @@ namespace Microsoft.EntityFrameworkCore.Metadata.Builders
                 }
             }
 
-            return relatedEntityType ?? Builder.ModelBuilder.Entity(relatedTypeName, ConfigurationSource.Explicit).Metadata;
+            return relatedEntityType ?? Builder.ModelBuilder.Entity(relatedTypeName, ConfigurationSource.Explicit)!.Metadata;
         }
 
         /// <summary>
@@ -913,7 +915,7 @@ namespace Microsoft.EntityFrameworkCore.Metadata.Builders
         ///     doing so can result in application failures when updating to a new Entity Framework Core release.
         /// </summary>
         [EntityFrameworkInternal]
-        protected virtual EntityType FindRelatedEntityType([NotNull] Type relatedType, [CanBeNull] string navigationName)
+        protected virtual EntityType FindRelatedEntityType([NotNull] Type relatedType, [CanBeNull] string? navigationName)
         {
             var relatedEntityType = DependentEntityType.FindInDefinitionPath(relatedType);
             if (relatedEntityType != null)

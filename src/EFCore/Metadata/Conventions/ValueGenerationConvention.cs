@@ -8,6 +8,8 @@ using JetBrains.Annotations;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
 using Microsoft.EntityFrameworkCore.Metadata.Conventions.Infrastructure;
 
+#nullable enable
+
 namespace Microsoft.EntityFrameworkCore.Metadata.Conventions
 {
     /// <summary>
@@ -50,7 +52,7 @@ namespace Microsoft.EntityFrameworkCore.Metadata.Conventions
             {
                 foreach (var property in foreignKey.Properties)
                 {
-                    property.Builder.ValueGenerated(ValueGenerated.Never);
+                    property.Builder!.ValueGenerated(ValueGenerated.Never);
                 }
             }
         }
@@ -92,7 +94,7 @@ namespace Microsoft.EntityFrameworkCore.Metadata.Conventions
                 {
                     foreach (var property in foreignKey.Properties)
                     {
-                        property.Builder.ValueGenerated(ValueGenerated.Never);
+                        property.Builder!.ValueGenerated(ValueGenerated.Never);
                     }
                 }
             }
@@ -111,7 +113,7 @@ namespace Microsoft.EntityFrameworkCore.Metadata.Conventions
                 {
                     foreach (var keyProperty in pk.Properties)
                     {
-                        keyProperty.Builder.ValueGenerated(GetValueGenerated(property));
+                        keyProperty.Builder!.ValueGenerated(GetValueGenerated(property));
                     }
                 }
             }
@@ -126,8 +128,8 @@ namespace Microsoft.EntityFrameworkCore.Metadata.Conventions
         /// <param name="context"> Additional information associated with convention execution. </param>
         public virtual void ProcessEntityTypePrimaryKeyChanged(
             IConventionEntityTypeBuilder entityTypeBuilder,
-            IConventionKey newPrimaryKey,
-            IConventionKey previousPrimaryKey,
+            IConventionKey? newPrimaryKey,
+            IConventionKey? previousPrimaryKey,
             IConventionContext<IConventionKey> context)
         {
             if (previousPrimaryKey != null)
@@ -142,7 +144,7 @@ namespace Microsoft.EntityFrameworkCore.Metadata.Conventions
             {
                 foreach (var property in newPrimaryKey.Properties)
                 {
-                    property.Builder.ValueGenerated(GetValueGenerated(property));
+                    property.Builder!.ValueGenerated(GetValueGenerated(property));
                 }
             }
         }
@@ -156,8 +158,8 @@ namespace Microsoft.EntityFrameworkCore.Metadata.Conventions
         /// <param name="context"> Additional information associated with convention execution. </param>
         public virtual void ProcessEntityTypeBaseTypeChanged(
             IConventionEntityTypeBuilder entityTypeBuilder,
-            IConventionEntityType newBaseType,
-            IConventionEntityType oldBaseType,
+            IConventionEntityType? newBaseType,
+            IConventionEntityType? oldBaseType,
             IConventionContext<IConventionEntityType> context)
         {
             if (entityTypeBuilder.Metadata.BaseType != newBaseType)
@@ -167,7 +169,7 @@ namespace Microsoft.EntityFrameworkCore.Metadata.Conventions
 
             foreach (var property in entityTypeBuilder.Metadata.GetProperties())
             {
-                property.Builder.ValueGenerated(GetValueGenerated(property));
+                property.Builder!.ValueGenerated(GetValueGenerated(property));
             }
         }
 
@@ -191,7 +193,7 @@ namespace Microsoft.EntityFrameworkCore.Metadata.Conventions
                     ? ValueGenerated.OnAdd
                     : (ValueGenerated?)null;
 
-        private static bool ShouldHaveGeneratedProperty(IKey key)
+        private static bool ShouldHaveGeneratedProperty(IKey? key)
         {
             var onOwnedType = key?.DeclaringEntityType.IsOwned();
             return key != null
@@ -224,7 +226,7 @@ namespace Microsoft.EntityFrameworkCore.Metadata.Conventions
         {
             foreach (var property in relationshipBuilder.Metadata.DeclaringEntityType.GetProperties())
             {
-                property.Builder.ValueGenerated(GetValueGenerated(property));
+                property.Builder!.ValueGenerated(GetValueGenerated(property));
             }
         }
     }

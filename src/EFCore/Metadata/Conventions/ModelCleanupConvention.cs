@@ -9,6 +9,8 @@ using Microsoft.EntityFrameworkCore.Metadata.Conventions.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata.Internal;
 using Microsoft.EntityFrameworkCore.Utilities;
 
+#nullable enable
+
 namespace Microsoft.EntityFrameworkCore.Metadata.Conventions
 {
     /// <summary>
@@ -82,7 +84,7 @@ namespace Microsoft.EntityFrameworkCore.Metadata.Conventions
                         && foreignKey.DependentToPrincipal == null
                         && !foreignKey.GetReferencingSkipNavigations().Any())
                     {
-                        entityType.Builder.HasNoRelationship(foreignKey, fromDataAnnotation: true);
+                        entityType.Builder!.HasNoRelationship(foreignKey, fromDataAnnotation: true);
                     }
                 }
             }
