@@ -174,7 +174,7 @@ namespace Microsoft.EntityFrameworkCore.Storage.Internal
                 {
                     var isNullProperty = parameterValue.GetType().GetRuntimeProperty("IsNull");
                     if (isNullProperty != null
-                        && isNullProperty.GetValue(parameterValue) is bool)
+                        && isNullProperty.GetValue(parameterValue) is bool isNull && isNull)
                     {
                         builder.Append("''");
                     }
