@@ -382,7 +382,6 @@ namespace Microsoft.EntityFrameworkCore.Storage
         /// <param name="isolationLevel"> The isolation level to use for the transaction. </param>
         /// <param name="cancellationToken"> A <see cref="CancellationToken" /> to observe while waiting for the task to complete. </param>
         /// <returns> The newly created transaction. </returns>
-        // TODO-NULLABLE: Spelling mistake :(
         protected virtual ValueTask<DbTransaction> ConnectionBeginTransactionAsync(
             IsolationLevel isolationLevel,
             CancellationToken cancellationToken = default)
