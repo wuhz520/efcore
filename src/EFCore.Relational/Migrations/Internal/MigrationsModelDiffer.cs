@@ -1742,8 +1742,21 @@ namespace Microsoft.EntityFrameworkCore.Migrations.Internal
                         continue;
                     }
 
-                    foreach (var targetKey in targetTable.PrimaryKey.MappedKeys)
+                    var isSameSharingTypesCount =
+                        sourceTable.EntityTypeMappings.Count(m => sourceTable.GetRowInternalForeignKeys(m.EntityType).Any())
+                        == targetTable.EntityTypeMappings.Count(m => targetTable.GetRowInternalForeignKeys(m.EntityType).Any());
+
+                    var sourceRowInternalFKCount = sourceTable.GetRowInternalForeignKeys(sourceEntityType).Count();
+                    foreach (var targetEntityTypeMapping in targetTable.EntityTypeMappings)
                     {
+                        var targetEntityType = targetEntityTypeMapping.EntityType;
+                        if (isSameSharingTypesCount
+                            && sourceRowInternalFKCount != targetTable.GetRowInternalForeignKeys(targetEntityType).Count())
+                        {
+                            continue;
+                        }
+
+                        var targetKey = targetEntityType.FindPrimaryKey();
                         var keyPropertiesMap = new List<(IProperty, ValueConverter, ValueConverter)>();
                         foreach (var keyProperty in targetKey.Properties)
                         {
