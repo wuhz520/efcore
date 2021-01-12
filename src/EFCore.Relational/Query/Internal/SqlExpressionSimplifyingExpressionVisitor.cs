@@ -24,6 +24,7 @@ namespace Microsoft.EntityFrameworkCore.Query.Internal
     public class SqlExpressionSimplifyingExpressionVisitor : ExpressionVisitor
     {
         private readonly ISqlExpressionFactory _sqlExpressionFactory;
+        private readonly bool _useRelationalNulls;
 
         /// <summary>
         ///     This is an internal API that supports the Entity Framework Core infrastructure and not subject to
@@ -31,9 +32,10 @@ namespace Microsoft.EntityFrameworkCore.Query.Internal
         ///     any release. You should only use it directly in your code with extreme caution and knowing that
         ///     doing so can result in application failures when updating to a new Entity Framework Core release.
         /// </summary>
-        public SqlExpressionSimplifyingExpressionVisitor([NotNull] ISqlExpressionFactory sqlExpressionFactory)
+        public SqlExpressionSimplifyingExpressionVisitor([NotNull] ISqlExpressionFactory sqlExpressionFactory, bool useRelationalNulls)
         {
             _sqlExpressionFactory = sqlExpressionFactory;
+            _useRelationalNulls = useRelationalNulls;
         }
 
         /// <summary>
@@ -272,6 +274,15 @@ namespace Microsoft.EntityFrameworkCore.Query.Internal
                             leftValue = leftCandidateInfo.ConstantValue;
                             rightValue = rightCandidateInfo.ConstantValue;
                             resultArray = UnionCollections((IEnumerable)leftValue, (IEnumerable)rightValue);
+
+                            if (_useRelationalNulls)
+                            {
+                                return GenerateInExpression(
+                                    leftCandidateInfo.ColumnExpression,
+                                    leftCandidateInfo.TypeMapping,
+                                    leftCandidateInfo.OperationType,
+                                    resultArray);
+                            }
                         }
                         else
                         {
@@ -287,10 +298,17 @@ namespace Microsoft.EntityFrameworkCore.Query.Internal
                             resultArray = AddToCollection((IEnumerable)leftValue, rightValue);
                         }
 
-                        return _sqlExpressionFactory.In(
-                            leftCandidateInfo.ColumnExpression,
-                            _sqlExpressionFactory.Constant(resultArray, leftCandidateInfo.TypeMapping),
-                            leftCandidateInfo.OperationType == ExpressionType.NotEqual);
+                        // we can't do IN optimizations when using relational null semantics
+                        // a != 1 && a != null would be converted to a NOT IN (1, null), which never returns any results
+                        // we need to keep it in the original form so that a != null gets converted to a IS NOT NULL instead
+                        if (!_useRelationalNulls)
+                        {
+                            return GenerateInExpression(
+                                leftCandidateInfo.ColumnExpression,
+                                leftCandidateInfo.TypeMapping,
+                                leftCandidateInfo.OperationType,
+                                resultArray);
+                        }
                     }
 
                     if (leftConstantIsEnumerable && rightConstantIsEnumerable)
@@ -310,6 +328,16 @@ namespace Microsoft.EntityFrameworkCore.Query.Internal
             }
 
             return sqlBinaryExpression.Update(left, right);
+
+            InExpression GenerateInExpression(
+                ColumnExpression columnExpression,
+                RelationalTypeMapping typeMapping,
+                ExpressionType operationType,
+                List<object> resultArray)
+                => _sqlExpressionFactory.In(
+                    columnExpression,
+                    _sqlExpressionFactory.Constant(resultArray, typeMapping),
+                    operationType == ExpressionType.NotEqual);
         }
 
         private List<object> ConstructCollection(object left, object right)
